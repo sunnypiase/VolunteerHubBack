@@ -26,6 +26,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.MapGet("/", (ApplicationContext context) => context.Categories.ToList());//Just for testing sql connection
+app.MapGet("/", (ApplicationContext context) => context.Tags.ToList());//Just for testing sql connection
 
 app.Run();
