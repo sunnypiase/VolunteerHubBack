@@ -1,11 +1,11 @@
-using Core.Models;
-using Microsoft.EntityFrameworkCore;
+using Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-var connection = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<ApplicationContext>(optionsBuilder => optionsBuilder.UseSqlServer(connection));
+builder.Services.AddScoped<UnitOfWork>();
+builder.Services.AddInfrastructureServices(builder.Configuration);
+
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -25,7 +25,5 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
-
-app.MapGet("/", (ApplicationContext context) => context.Tags.ToList());//Just for testing sql connection
 
 app.Run();

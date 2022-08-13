@@ -1,6 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Domain.Models;
+using Microsoft.EntityFrameworkCore;
 
-namespace Core.Models
+namespace Infrastructure
 {
     public class ApplicationContext : DbContext
     {
@@ -9,8 +10,7 @@ namespace Core.Models
         public DbSet<User> Users { get; set; }
         public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
         {
-            /*Database.EnsureDeleted();
-            Database.EnsureCreated();*/
+
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
