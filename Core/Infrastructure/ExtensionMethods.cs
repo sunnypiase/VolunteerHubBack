@@ -1,5 +1,5 @@
-﻿using Domain;
-using Domain.Models;
+﻿using Domain.Abstractions;
+using Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,12 +11,12 @@ namespace Infrastructure
         public static void AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddDbContext<ApplicationContext>(optionsBuilder =>
-            optionsBuilder.UseSqlServer(configuration.GetConnectionString("DefaultConnection"), 
-            x => x.MigrationsAssembly("Infrastructure")));
+                optionsBuilder.UseSqlServer(configuration.GetConnectionString("DefaultConnection"), 
+                    x => x.MigrationsAssembly("Infrastructure")));
             
-            services.AddScoped<IGenericRepository<User>, SqlGenericRepository<User>>();
-            services.AddScoped<IGenericRepository<Tag>, SqlGenericRepository<Tag>>();
-            services.AddScoped<IGenericRepository<Post>, SqlGenericRepository<Post>>();
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<ITagRepository, TagRepository>();
+            services.AddScoped<IPostRepository, PostRepository>();
         }
     }
 }

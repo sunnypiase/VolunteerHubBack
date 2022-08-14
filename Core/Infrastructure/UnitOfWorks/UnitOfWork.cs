@@ -1,19 +1,19 @@
-﻿using Domain;
+﻿using Domain.Abstractions;
 using Domain.Models;
 
-namespace Infrastructure
+namespace Infrastructure.UnitOfWorks
 {
-    public class UnitOfWork : IDisposable
+    public class UnitOfWork : IUnitOfWork
     {
         private readonly ApplicationContext _applicationContext;
-        private readonly IGenericRepository<User> _userRepository;
-        private readonly IGenericRepository<Post> _postRepository;
-        private readonly IGenericRepository<Tag> _tagRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly IPostRepository _postRepository;
+        private readonly ITagRepository _tagRepository;
         public UnitOfWork(
             ApplicationContext applicationContext,
-            IGenericRepository<User> userRepository,
-            IGenericRepository<Post> postRepository,
-            IGenericRepository<Tag> tagRepository)
+            IUserRepository userRepository,
+            IPostRepository postRepository,
+            ITagRepository tagRepository)
         {
             _applicationContext = applicationContext;
             _userRepository = userRepository;
@@ -21,9 +21,9 @@ namespace Infrastructure
             _tagRepository = tagRepository;
         }
 
-        public IGenericRepository<User> UserRepository { get => _userRepository; }
-        public IGenericRepository<Post> PostRepository { get => _postRepository; }
-        public IGenericRepository<Tag> TagRepository { get => _tagRepository; }
+        public IUserRepository Users { get => _userRepository; }
+        public IPostRepository Posts { get => _postRepository; }
+        public ITagRepository Tags { get => _tagRepository; }
         public async Task SaveChanges()
         {
             await _applicationContext.SaveChangesAsync();

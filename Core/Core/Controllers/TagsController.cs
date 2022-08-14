@@ -1,18 +1,17 @@
 ﻿using Domain.Models;
-using Infrastructure;
+using Infrastructure.UnitOfWorks;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Core.Controllers
 {
-    //Controlles work but i think i need to do cleaner code in methods here (especially in Create and Update methods)
     [Route("api/[controller]")]
     [ApiController]
     public class TagsController : ControllerBase
     {
-        private readonly UnitOfWork _unit;
-        public TagsController(UnitOfWork unit)
+        private readonly IUnitOfWork _unitOfWork;
+        public TagsController(IUnitOfWork unitOfWork)
         {
-            _unit = unit;
+            _unitOfWork = unitOfWork;
         }
 
         [HttpGet]
@@ -20,7 +19,7 @@ namespace Core.Controllers
         {
             try
             {
-                return Ok(await _unit.TagRepository.Get());
+                return Ok(await _unitOfWork.Tags.Get());
             }
             catch (Exception)
             {
@@ -33,7 +32,7 @@ namespace Core.Controllers
         {
             try
             {
-                var result = await _unit.TagRepository.GetById(id);
+                var result = await _unitOfWork.Tags.GetById(id);
                 if (result == null)
                 {
                     return NotFound();
@@ -47,7 +46,7 @@ namespace Core.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(Tag tag)//Maybe i should use DTO somewhere here...(at least to add validation attrs)
+        public async Task<IActionResult> Create(Tag tag)//Maybe i should use DTO somewhere here...
         {
             try
             {
@@ -56,10 +55,10 @@ namespace Core.Controllers
                     return BadRequest();
                 }
 
-                var createdTag = await _unit.TagRepository.Insert(tag);
-                await _unit.SaveChanges();
+                var result = await _unitOfWork.Tags.Insert(tag);
+                await _unitOfWork.SaveChanges();
 
-                return CreatedAtAction(nameof(GetTag), new { id = createdTag.TagId }, createdTag);
+                return result ? Ok("Tag successfully added") : Conflict("Tag not added");
             }
             catch (Exception)
             {
@@ -67,29 +66,16 @@ namespace Core.Controllers
             }
         }
 
-        [HttpPut("{id:int}")]
-        public async Task<IActionResult> Update(int id, Tag tag)//Should i return entity here? Do i need id as parameter?
+        [HttpPut]
+        public async Task<IActionResult> Update(Tag tag)
         {
             try
             {
-                if (id != tag.TagId)
-                {
-                    return BadRequest("Tag id mismatch");
-                }
+                var result = await _unitOfWork.Tags.Update(tag);
+                await _unitOfWork.SaveChanges();
 
-                var tagToUpdate = await _unit.TagRepository.GetById(id);
 
-                if (tagToUpdate == null)
-                {
-                    return NotFound($"Tag with id = {id} not found");
-                }
-
-                tagToUpdate.Name = tag.Name;
-                tagToUpdate.Posts = tag.Posts;
-
-                await _unit.TagRepository.Update(tagToUpdate);
-                await _unit.SaveChanges();
-                return Ok(tagToUpdate);
+                return result ? Ok("Tag successfully updated") : NotFound($"Tag with id = {tag.TagId} not found");
             }
             catch (Exception)
             {
@@ -101,16 +87,10 @@ namespace Core.Controllers
         {
             try
             {
-                var tagToDelete = await _unit.TagRepository.GetById(id);
+                var result = await _unitOfWork.Tags.Delete(id);
+                await _unitOfWork.SaveChanges();
 
-                if (tagToDelete == null)
-                {
-                    return NotFound($"Tag with id = {id} not found");
-                }
-
-                await _unit.TagRepository.Delete(tagToDelete);
-                await _unit.SaveChanges();
-                return Ok($"Tag with id = {id} deleted");
+                return result ? Ok($"Tag with id = {id} deleted") : NotFound($"Tag with id = {id} not found");
             }
             catch (Exception)
             {

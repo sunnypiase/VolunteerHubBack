@@ -1,13 +1,13 @@
-﻿using Domain;
+﻿using Domain.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
-namespace Infrastructure
+namespace Infrastructure.Repositories
 {
     public class SqlGenericRepository<TEntity> : IGenericRepository<TEntity> where TEntity : class
     {
-        internal ApplicationContext _applicationContext;
-        internal DbSet<TEntity> _entity;
+        protected readonly ApplicationContext _applicationContext;
+        protected readonly DbSet<TEntity> _entity;
         public SqlGenericRepository(ApplicationContext applicationContext)
         {
             _applicationContext = applicationContext;
@@ -41,29 +41,26 @@ namespace Infrastructure
         {
             return await _entity.FindAsync(id);
         }
-        public virtual async Task<TEntity> Insert(TEntity entity)
+        public virtual async Task<bool> Insert(TEntity entity)
         {
-            return (await _entity.AddAsync(entity)).Entity;
+            await _entity.AddAsync(entity);
+            return true;
         }
-        public virtual async Task Delete(object id)
+        public virtual async Task<bool> Delete(object id)
         {
             var entityToDelete = await _entity.FindAsync(id);
+
             if (entityToDelete != null)
             {
-                await Delete(entityToDelete);
+                _entity.Remove(entityToDelete);
+                return true;
             }
+            return false;
         }
-        public virtual async Task Delete(TEntity entityToDelete)
-        {
-            if (_applicationContext.Entry(entityToDelete).State == EntityState.Detached)
-            {
-                _entity.Attach(entityToDelete);
-            }
-            await Task.Run(() => _entity.Remove(entityToDelete));
-        }
-        public async virtual Task Update(TEntity entityToUpdate)
+        public async virtual Task<bool> Update(TEntity entityToUpdate)//Maybe i should throw NotImplementedException here???
         {
             await Task.Run(() => _entity.Update(entityToUpdate));
+            return true;
         }
     }
 }
