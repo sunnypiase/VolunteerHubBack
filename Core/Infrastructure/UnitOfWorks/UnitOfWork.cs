@@ -1,4 +1,5 @@
-﻿using Domain.Abstractions;
+﻿using Application.UnitOfWorks;
+using Domain.Abstractions;
 using Domain.Models;
 
 namespace Infrastructure.UnitOfWorks

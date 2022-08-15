@@ -1,5 +1,7 @@
-﻿using Domain.Models;
-using Infrastructure.UnitOfWorks;
+﻿using Application.Tags.Queries;
+using Domain.Models;
+using Application.UnitOfWorks;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Core.Controllers
@@ -9,9 +11,12 @@ namespace Core.Controllers
     public class TagsController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
-        public TagsController(IUnitOfWork unitOfWork)
+        private readonly IMediator _mediator;
+
+        public TagsController(IUnitOfWork unitOfWork, IMediator mediator)
         {
             _unitOfWork = unitOfWork;
+            _mediator = mediator;
         }
 
         [HttpGet]
@@ -19,7 +24,8 @@ namespace Core.Controllers
         {
             try
             {
-                return Ok(await _unitOfWork.Tags.Get());
+                //return Ok(await _unitOfWork.Tags.Get());
+                return Ok(await _mediator.Send(new GetTagsQuery()));
             }
             catch (Exception)
             {

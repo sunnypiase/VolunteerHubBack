@@ -1,6 +1,6 @@
 ﻿using Domain.Abstractions;
 
-namespace Infrastructure.UnitOfWorks
+namespace Application.UnitOfWorks
 {
     public interface IUnitOfWork : IDisposable
     {
