@@ -15,12 +15,9 @@ namespace Application.Tags.Queries
     public class GetTagsHandler : IRequestHandler<GetTagsQuery, IEnumerable<Tag>>
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IMediator mediator;
-
-        public GetTagsHandler(IUnitOfWork unitOfWork, IMediator mediator)
+        public GetTagsHandler(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-            this.mediator = mediator;
         }
         public Task<IEnumerable<Tag>> Handle(GetTagsQuery request, CancellationToken cancellationToken)
         {
