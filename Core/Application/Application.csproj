@@ -9,7 +9,6 @@
   <ItemGroup>
     <Folder Include="Commands\Users\" />
     <Folder Include="Commands\Tags\" />
-    <Folder Include="Commands\Posts\" />
     <Folder Include="Queries\Users\" />
   </ItemGroup>
 

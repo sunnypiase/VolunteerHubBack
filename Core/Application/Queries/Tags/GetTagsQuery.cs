@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 
 namespace Application.Tags.Queries
 {
-
     public record GetTagsQuery() : IRequest<IEnumerable<Tag>>;
 
     public class GetTagsHandler : IRequestHandler<GetTagsQuery, IEnumerable<Tag>>
