@@ -7,8 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Posts\Commands\" />
-    <Folder Include="Tags\Commands\" />
+    <Folder Include="Commands\Users\" />
+    <Folder Include="Commands\Tags\" />
+    <Folder Include="Commands\Posts\" />
+    <Folder Include="Queries\Users\" />
   </ItemGroup>
 
   <ItemGroup>
