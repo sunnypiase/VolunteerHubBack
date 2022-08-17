@@ -1,7 +1,8 @@
 ﻿using Application.Tags.Queries;
-using Domain.Models;
 using Application.UnitOfWorks;
+using Domain.Models;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Core.Controllers
@@ -38,7 +39,7 @@ namespace Core.Controllers
         {
             try
             {
-                var result = await _unitOfWork.Tags.GetById(id);
+                Tag? result = await _unitOfWork.Tags.GetById(id);
                 if (result == null)
                 {
                     return NotFound();
@@ -61,7 +62,7 @@ namespace Core.Controllers
                     return BadRequest();
                 }
 
-                var result = await _unitOfWork.Tags.Insert(tag);
+                bool result = await _unitOfWork.Tags.Insert(tag);
                 await _unitOfWork.SaveChanges();
 
                 return result ? Ok("Tag successfully added") : Conflict("Tag not added");
@@ -77,7 +78,7 @@ namespace Core.Controllers
         {
             try
             {
-                var result = await _unitOfWork.Tags.Update(tag);
+                bool result = await _unitOfWork.Tags.Update(tag);
                 await _unitOfWork.SaveChanges();
 
 
@@ -93,7 +94,7 @@ namespace Core.Controllers
         {
             try
             {
-                var result = await _unitOfWork.Tags.Delete(id);
+                bool result = await _unitOfWork.Tags.Delete(id);
                 await _unitOfWork.SaveChanges();
 
                 return result ? Ok($"Tag with id = {id} deleted") : NotFound($"Tag with id = {id} not found");

@@ -1,3 +1,5 @@
+using Application.Tags.Queries; // ?
+using Application.UnitOfWorks;
 using Infrastructure;
 using Infrastructure.UnitOfWorks;
 using MediatR;
@@ -15,7 +17,7 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddTransient<HashingService>();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 
-builder.Services.AddMediatR(typeof(GetTagsQuery).Assembly);
+builder.Services.AddMediatR(typeof(GetTagsQuery).Assembly); // ?
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

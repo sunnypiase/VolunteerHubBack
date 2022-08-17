@@ -11,7 +11,7 @@ namespace Infrastructure.Repositories
 
         public override async Task<bool> Update(User entityToUpdate)
         {
-            var userToUpdate = await _entity.FindAsync(entityToUpdate.UserId);
+            User? userToUpdate = await _entity.FindAsync(entityToUpdate.UserId);
 
             if (userToUpdate != null)
             {

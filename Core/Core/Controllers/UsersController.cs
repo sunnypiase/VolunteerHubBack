@@ -16,10 +16,36 @@ namespace WebApi.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPost]
+        [HttpPost("login")]
         public async Task<ActionResult<string>> Login(LoginUserCommand loginUserCommand)
         {
-            return await _mediator.Send(loginUserCommand);
+            try
+            {
+                return Ok(await _mediator.Send(loginUserCommand));
+            }
+            catch (Exception)// TODO: Change here to some custom exceptions
+            {
+                return BadRequest();
+            }
+        }
+
+        [AllowAnonymous]
+        [HttpPost("register")]
+        public async Task<IActionResult> Register(RegisterUserCommand registerUserCommand)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    await _mediator.Send(registerUserCommand);
+                    return Ok();
+                }
+                return BadRequest();
+            }
+            catch (Exception)// TODO: Change here to some custom exceptions
+            {
+                return BadRequest();
+            }
         }
     }
 }

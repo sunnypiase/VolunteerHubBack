@@ -1,11 +1,6 @@
 ﻿using Application.UnitOfWorks;
 using Domain.Models;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Queries.Posts
 {
@@ -19,9 +14,9 @@ namespace Application.Queries.Posts
         {
             _unitOfWork = unitOfWork;
         }
-        public Task<IEnumerable<Post>> Handle(GetPostsByTagsQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<Post>> Handle(GetPostsByTagsQuery request, CancellationToken cancellationToken)
         {
-            return (Task<IEnumerable<Post>>)_unitOfWork.Posts.Get().Result.Where(post => !post.Tags.Except(request.Tags).Any());
+            return await _unitOfWork.Posts.Get(post => request.Tags.All(tag => post.Tags.Contains(tag)));
         }
     }
 }

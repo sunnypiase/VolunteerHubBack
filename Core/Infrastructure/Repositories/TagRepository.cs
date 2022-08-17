@@ -11,7 +11,7 @@ namespace Infrastructure.Repositories
 
         public override async Task<bool> Update(Tag entityToUpdate)
         {
-            var tagToUpdate = await _entity.FindAsync(entityToUpdate.TagId);
+            Tag? tagToUpdate = await _entity.FindAsync(entityToUpdate.TagId);
 
             if (tagToUpdate != null)
             {
