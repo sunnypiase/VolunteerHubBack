@@ -1,9 +1,8 @@
+using Application.Tags.Queries; // ?
+using Application.UnitOfWorks;
 using Infrastructure;
 using Infrastructure.UnitOfWorks;
 using MediatR;
-using Application.UnitOfWorks;
-
-using Application.Tags.Queries; 
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,7 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 
-builder.Services.AddMediatR(typeof(GetTagsQuery).Assembly); 
+builder.Services.AddMediatR(typeof(GetTagsQuery).Assembly); // ?
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

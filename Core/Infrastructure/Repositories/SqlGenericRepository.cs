@@ -25,7 +25,7 @@ namespace Infrastructure.Repositories
                 query = query.Where(filter);
             }
 
-            foreach (var includeProperty in commaSeparatedIncludeProperties.Split(',', StringSplitOptions.RemoveEmptyEntries))
+            foreach (string? includeProperty in commaSeparatedIncludeProperties.Split(',', StringSplitOptions.RemoveEmptyEntries))
             {
                 query = query.Include(includeProperty);
             }
@@ -48,7 +48,7 @@ namespace Infrastructure.Repositories
         }
         public virtual async Task<bool> Delete(object id)
         {
-            var entityToDelete = await _entity.FindAsync(id);
+            TEntity? entityToDelete = await _entity.FindAsync(id);
 
             if (entityToDelete != null)
             {
@@ -57,7 +57,7 @@ namespace Infrastructure.Repositories
             }
             return false;
         }
-        public async virtual Task<bool> Update(TEntity entityToUpdate)//Maybe i should throw NotImplementedException here???
+        public virtual async Task<bool> Update(TEntity entityToUpdate)//Maybe i should throw NotImplementedException here???
         {
             await Task.Run(() => _entity.Update(entityToUpdate));
             return true;

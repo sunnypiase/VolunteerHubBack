@@ -1,6 +1,6 @@
-﻿using Application.UnitOfWorks;
+﻿using Application.Repositories.Abstractions;
+using Application.UnitOfWorks;
 using Domain.Abstractions;
-using Domain.Models;
 
 namespace Infrastructure.UnitOfWorks
 {
@@ -10,21 +10,27 @@ namespace Infrastructure.UnitOfWorks
         private readonly IUserRepository _userRepository;
         private readonly IPostRepository _postRepository;
         private readonly ITagRepository _tagRepository;
+        public readonly IPostConnectionRepository _postConnectionRepository;
+
         public UnitOfWork(
             ApplicationContext applicationContext,
             IUserRepository userRepository,
             IPostRepository postRepository,
-            ITagRepository tagRepository)
+            ITagRepository tagRepository,
+            IPostConnectionRepository postConnectionRepository)
         {
             _applicationContext = applicationContext;
             _userRepository = userRepository;
             _postRepository = postRepository;
             _tagRepository = tagRepository;
+            _postConnectionRepository = postConnectionRepository;
         }
 
-        public IUserRepository Users { get => _userRepository; }
-        public IPostRepository Posts { get => _postRepository; }
-        public ITagRepository Tags { get => _tagRepository; }
+        public IUserRepository Users => _userRepository;
+        public IPostRepository Posts => _postRepository;
+        public ITagRepository Tags => _tagRepository;
+        public IPostConnectionRepository PostConnections => _postConnectionRepository;
+
         public async Task SaveChanges()
         {
             await _applicationContext.SaveChangesAsync();

@@ -1,11 +1,6 @@
 ﻿using Application.UnitOfWorks;
 using Domain.Models;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Queries.Posts
 {
@@ -19,9 +14,9 @@ namespace Application.Queries.Posts
         {
             _unitOfWork = unitOfWork;
         }
-        public Task<IEnumerable<Post>> Handle(GetPostByIdQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<Post>> Handle(GetPostByIdQuery request, CancellationToken cancellationToken)
         {
-            return Task.FromResult(_unitOfWork.Posts.Get().Result.Where(x => x.PostId == request.PostId));
+            return await _unitOfWork.Posts.Get(x => x.PostId == request.PostId/*, y => y.OrderByDescending(post => post.User), "User"*/); // example
         }
     }
 }

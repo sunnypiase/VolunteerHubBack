@@ -36,7 +36,8 @@ namespace WebApi.Controllers
         [HttpPost]
         public async Task<Post> Post([FromBody] Post post)
         {
-            var model = new CreatePostCommand() { 
+            CreatePostCommand? model = new CreatePostCommand()
+            {
                 Title = post.Title,
                 Description = post.Description,
                 Image = post.Image,
