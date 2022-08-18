@@ -1,4 +1,6 @@
-﻿using Application.Tags.Queries;
+﻿using Application.Commands.Tags;
+using Application.Queries.Tags;
+using Application.Tags.Queries;
 using Application.UnitOfWorks;
 using Domain.Models;
 using MediatR;
@@ -21,72 +23,34 @@ namespace Core.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetTags()
-        {
-            try
-            {
-                //return Ok(await _unitOfWork.Tags.Get());
-                return Ok(await _mediator.Send(new GetTagsQuery()));
-            }
-            catch (Exception)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving data from the database");
-            }
-        }
+        public async Task<IActionResult> Get() => Ok(await _mediator.Send(new GetTagsQuery()));
 
         [HttpGet("{id:int}")]
-        public async Task<IActionResult> GetTag(int id)
+        public async Task<IActionResult> Get(int id) 
         {
             try
             {
-                Tag? result = await _unitOfWork.Tags.GetById(id);
-                if (result == null)
-                {
-                    return NotFound();
-                }
-                return Ok(result);
+                return Ok(await _mediator.Send(new GetTagByIdQuery(id)));
             }
             catch (Exception)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving data from the database");
+                return NotFound();
             }
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(Tag tag)//Maybe i should use DTO somewhere here...
-        {
-            try
-            {
-                if (tag == null)
-                {
-                    return BadRequest();
-                }
-
-                bool result = await _unitOfWork.Tags.Insert(tag);
-                await _unitOfWork.SaveChanges();
-
-                return result ? Ok("Tag successfully added") : Conflict("Tag not added");
-            }
-            catch (Exception)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Error creating new tag record");
-            }
-        }
+        public async Task<IActionResult> Create([FromBody] CreateTagCommand tag) => Ok(await _mediator.Send(tag));
 
         [HttpPut]
-        public async Task<IActionResult> Update(Tag tag)
+        public async Task<IActionResult> Update([FromBody] UpdateTagCommand tag)
         {
             try
             {
-                bool result = await _unitOfWork.Tags.Update(tag);
-                await _unitOfWork.SaveChanges();
-
-
-                return result ? Ok("Tag successfully updated") : NotFound($"Tag with id = {tag.TagId} not found");
+                return Ok(await _mediator.Send(tag));
             }
             catch (Exception)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Error creating new tag record");
+                return NotFound();
             }
         }
         [HttpDelete("{id:int}")]
@@ -94,14 +58,11 @@ namespace Core.Controllers
         {
             try
             {
-                bool result = await _unitOfWork.Tags.Delete(id);
-                await _unitOfWork.SaveChanges();
-
-                return result ? Ok($"Tag with id = {id} deleted") : NotFound($"Tag with id = {id} not found");
+                return Ok(await _mediator.Send(new DeleteTagCommand(id)));
             }
             catch (Exception)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Error deleting tag record");
+                return NotFound();
             }
         }
     }

@@ -52,6 +52,7 @@ namespace Infrastructure.Repositories
 
             if (entityToDelete != null)
             {
+                // TODO make it work
                 _entity.Remove(entityToDelete);
                 return true;
             }
