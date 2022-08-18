@@ -1,4 +1,5 @@
 ﻿using Application.Commands.Users;
+using Domain.Exceptions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -21,11 +22,19 @@ namespace WebApi.Controllers
         {
             try
             {
-                return Ok(await _mediator.Send(loginUserCommand));
+                if (ModelState.IsValid)
+                {
+                    return Ok(await _mediator.Send(loginUserCommand));
+                }
+                return BadRequest("User is not valid");
             }
-            catch (Exception)// TODO: Change here to some custom exceptions
+            catch (WrongUserEmailOrPasswordException wrongDataException)
             {
-                return BadRequest();
+                return BadRequest(wrongDataException.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving data from the database");
             }
         }
 
@@ -38,13 +47,17 @@ namespace WebApi.Controllers
                 if (ModelState.IsValid)
                 {
                     await _mediator.Send(registerUserCommand);
-                    return Ok();
+                    return Ok("Successfully registered!");
                 }
-                return BadRequest("Model is not valid");
+                return BadRequest("User is not valid");
             }
-            catch (Exception)// TODO: Change here to some custom exceptions
+            catch (EmailTakenByOtherUserException emailException)
             {
-                return BadRequest();
+                return BadRequest(emailException.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving data from the database");
             }
         }
     }

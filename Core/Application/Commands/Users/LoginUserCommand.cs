@@ -1,9 +1,11 @@
 ﻿using Application.Services;
 using Application.UnitOfWorks;
+using Domain.Exceptions;
 using Domain.Models;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -12,7 +14,11 @@ namespace Application.Commands.Users
 {
     public record LoginUserCommand : IRequest<string>
     {
+        [Required(ErrorMessage = "Login is required")]
+        [EmailAddress]
         public string Login { get; set; }
+        [Required(ErrorMessage = "Password is reqired")]
+        [StringLength(20, ErrorMessage = "Password must be between 8 and 20 characters", MinimumLength = 8)]
         public string Password { get; set; }
     }
     public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, string>
@@ -29,12 +35,11 @@ namespace Application.Commands.Users
         public async Task<string> Handle(LoginUserCommand request, CancellationToken cancellationToken)
         {
             var passwordHash = _hashingService.GetHash(request.Password);
-            var users = await _unitOfWork.Users.Get(user => user.Email == request.Login && user.Password == passwordHash);
-            var user = users.FirstOrDefault();
+            var user = (await _unitOfWork.Users.Get(user => user.Email == request.Login && user.Password == passwordHash)).FirstOrDefault();
 
             if (user == null)
             {
-                throw new Exception();// TODO: Make here custom exception
+                throw new WrongUserEmailOrPasswordException();
             }
 
             return GenerateJwtToken(user);

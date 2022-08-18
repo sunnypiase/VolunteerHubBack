@@ -2,6 +2,7 @@
 using Application.UnitOfWorks;
 using Domain.Attributes;
 using Domain.Enums;
+using Domain.Exceptions;
 using Domain.Models;
 using MediatR;
 using System.ComponentModel.DataAnnotations;
@@ -20,10 +21,10 @@ namespace Application.Commands.Users
         [EmailAddress]
         public string Email { get; set; }
         [Required(ErrorMessage = "Password is reqired")]
-        [StringLength(20, ErrorMessage = "Password must be between 8 and 20 characters", MinimumLength = 2)]
+        [StringLength(20, ErrorMessage = "Password must be between 8 and 20 characters", MinimumLength = 8)]
         public string Password { get; set; }
         [Required(ErrorMessage = "Password is reqired")]
-        [StringLength(20, ErrorMessage = "Password must be between 8 and 20 characters", MinimumLength = 2)]
+        [StringLength(20, ErrorMessage = "Password must be between 8 and 20 characters", MinimumLength = 8)]
         [Compare("Password", ErrorMessage = "Passwords do not match")]
         public string RepeatPassword { get; set; }
         [Required]
@@ -45,16 +46,11 @@ namespace Application.Commands.Users
         }
         public async Task<Unit> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
         {
-            if (request.Role == UserRole.Admin.ToString())
-            {
-                throw new Exception();// TODO: Add custom exception (maybe i should not check this)
-            }
-
             var existingUser = (await _unitOfWork.Users.Get(user => user.Email == request.Email)).FirstOrDefault();
 
             if (existingUser != null)
             {
-                throw new Exception();// TODO: Add custom exception
+                throw new EmailTakenByOtherUserException(request.Email);
             }
 
             var newUser = new User()
