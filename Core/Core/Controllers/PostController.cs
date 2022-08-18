@@ -34,18 +34,10 @@ namespace WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<Post> Post([FromBody] Post post)
+        public async Task<Post> Post([FromBody] CreatePostCommand post)
         {
-            CreatePostCommand? model = new CreatePostCommand()
-            {
-                Title = post.Title,
-                Description = post.Description,
-                Image = post.Image,
-                Tags = post.Tags,
-                User = post.User,
-                UserId = post.UserId,
-            };
-            return await _mediator.Send(model);
+            
+            return await _mediator.Send(post);
         }
     }
 }
