@@ -40,7 +40,7 @@ namespace WebApi.Controllers
                     await _mediator.Send(registerUserCommand);
                     return Ok();
                 }
-                return BadRequest();
+                return BadRequest("Model is not valid");
             }
             catch (Exception)// TODO: Change here to some custom exceptions
             {
