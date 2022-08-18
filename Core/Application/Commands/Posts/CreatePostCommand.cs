@@ -28,7 +28,7 @@ namespace Application.Commands.Posts
         }
         public async Task<Post> Handle(CreatePostCommand request, CancellationToken cancellationToken)
         {
-            return new Post()
+            var res = new Post()
             {
                 Title = request.Title,
                 Description = request.Description,
@@ -37,6 +37,9 @@ namespace Application.Commands.Posts
                 Tags = await GetTagsByIdsAsync(request.TagIds),
                 Image = request.Image
             };
+            await _unitOfWork.Posts.Insert(res);
+            await _unitOfWork.SaveChanges();
+            return res;
         }
 
         private async Task<ICollection<Tag>> GetTagsByIdsAsync(ICollection<int> tagIds)

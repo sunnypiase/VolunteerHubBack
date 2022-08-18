@@ -1,14 +1,10 @@
 ﻿using Application.UnitOfWorks;
 using Domain.Models;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Commands.PostConnections
 {
+
     public class CreatePostConnectionCommand : IRequest<PostConnection>
     {
         public string Title { get; set; }
@@ -26,14 +22,17 @@ namespace Application.Commands.PostConnections
         }
         public async Task<PostConnection> Handle(CreatePostConnectionCommand request, CancellationToken cancellationToken)
         {
-            return new PostConnection()
+            PostConnection? res = new()
             {
                 Title = request.Title,
                 Message = request.Message,
                 VolunteerPost = await _unitOfWork.Posts.GetById(request.VolunteerPostId),
                 NeedfulPost = await _unitOfWork.Posts.GetById(request.NeedfulPostId),
             };
+            await _unitOfWork.PostConnections.Insert(res);
+            await _unitOfWork.SaveChanges();
+            return res;
         }
-        
+
     }
 }
