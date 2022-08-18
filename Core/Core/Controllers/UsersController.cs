@@ -18,13 +18,18 @@ namespace WebApi.Controllers
 
         [AllowAnonymous]
         [HttpPost("login")]
-        public async Task<ActionResult<string>> Login(LoginUserCommand loginUserCommand)
+        public async Task<IActionResult> Login(LoginUserCommand loginUserCommand)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    return Ok(await _mediator.Send(loginUserCommand));
+                    var token = await _mediator.Send(loginUserCommand);
+                    HttpContext.Response.Cookies.Append("token", token, new CookieOptions
+                    {
+                        MaxAge = TimeSpan.FromDays(1)
+                    });
+                    return Ok("Successfully logged in");
                 }
                 return BadRequest("User is not valid");
             }
@@ -59,6 +64,14 @@ namespace WebApi.Controllers
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving data from the database");
             }
+        }
+
+        [Authorize]
+        [HttpPost("logout")]
+        public async Task<IActionResult> LogOut()
+        {
+            HttpContext.Response.Cookies.Delete("token");
+            return Ok("Successfully logged out");
         }
     }
 }
