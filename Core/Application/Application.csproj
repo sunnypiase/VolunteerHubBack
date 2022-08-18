@@ -8,7 +8,7 @@
 
   <ItemGroup>
     <Folder Include="Commands\Tags\" />
-    <Folder Include="Commands\PostConnection\" />
+    <Folder Include="Commands\PostConnections\" />
     <Folder Include="Queries\Users\" />
   </ItemGroup>
 
