@@ -1,8 +1,13 @@
-﻿using Application.Tags.Queries;
+﻿using Application.Commands.Posts;
+using Application.Commands.Users;
+using Application.Queries.Users;
+using Application.Tags.Queries;
 using Application.UnitOfWorks;
+using Domain.Enums;
 using Domain.Models;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using System.Xml.Linq;
 
 namespace WebApi.Controllers
 {
@@ -37,7 +42,7 @@ namespace WebApi.Controllers
         {
             try
             {
-                Tag? result = await _unitOfWork.Users.GetById(id);
+                User? result = await _unitOfWork.Users.GetById(id);
                 if (result == null)
                 {
                     return NotFound();
@@ -48,6 +53,23 @@ namespace WebApi.Controllers
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving data from the database");
             }
+        }
+
+        [HttpPost]
+        public async Task<User> Post([FromBody] User user)
+        {
+            CreateUserCommand? model = new CreateUserCommand()
+            {
+                Name = user.Name,
+                Email = user.Email,
+                Password = user.Password,
+                Surname = user.Surname,
+                PhoneNumber = user.PhoneNumber,
+                Address = user.Address,
+                Role = user.Role,
+                Posts = user.Posts
+            };
+            return await _mediator.Send(model);
         }
         [HttpPut]
         public async Task<IActionResult> UpdateUser(User user)
