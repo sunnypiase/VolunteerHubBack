@@ -1,6 +1,8 @@
-﻿using Application.UnitOfWorks;
+﻿using Application.Services;
+using Application.UnitOfWorks;
 using Domain.Models;
 using MediatR;
+using System.Text.Json.Serialization;
 
 namespace Application.Commands.Posts
 {
@@ -11,6 +13,8 @@ namespace Application.Commands.Posts
         public string Description { get; set; }
         public int UserId { get; set; }
         public ICollection<int> TagIds { get; set; }
+
+        [JsonConverter(typeof(ByteArrayConverter))]
         public byte[] Image { get; set; }
     }
 
@@ -28,10 +32,10 @@ namespace Application.Commands.Posts
             {
                 Title = request.Title,
                 Description = request.Description,
-                Image = request.Image,
                 UserId = request.UserId,
                 User = await _unitOfWork.Users.GetById(request.UserId),
                 Tags = await GetTagsByIdsAsync(request.TagIds),
+                Image = request.Image
             };
         }
 
