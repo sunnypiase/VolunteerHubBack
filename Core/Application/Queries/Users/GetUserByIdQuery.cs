@@ -5,8 +5,8 @@ using MediatR;
 
 namespace Application.Queries.Users
 {
-    public record GetUserByIdQuery(int UserId) : IRequest<IEnumerable<User>>;
-    public class GetUserByIdHandler : IRequestHandler<GetUserByIdQuery, IEnumerable<User>>
+    public record GetUserByIdQuery(int UserId) : IRequest<User>;
+    public class GetUserByIdHandler : IRequestHandler<GetUserByIdQuery, User>
     {
         private readonly IUnitOfWork _unitOfWork;
 
@@ -14,9 +14,9 @@ namespace Application.Queries.Users
         {
             _unitOfWork = unitOfWork;
         }
-        public async Task<IEnumerable<User>> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
+        public async Task<User> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
         {
-            return await _unitOfWork.Users.Get(user => user.UserId == request.UserId);
+            return await _unitOfWork.Users.GetById(request.UserId);
         }
     }
 }

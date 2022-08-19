@@ -20,7 +20,7 @@ namespace Infrastructure.Repositories
                 userToUpdate.PhoneNumber = entityToUpdate.PhoneNumber;
                 userToUpdate.Address = entityToUpdate.Address;
                 userToUpdate.Role = entityToUpdate.Role;
-                userToUpdate.Posts = entityToUpdate.Posts;
+                userToUpdate.PostsId = entityToUpdate.PostsId;
                 return true;
             }
             return false;

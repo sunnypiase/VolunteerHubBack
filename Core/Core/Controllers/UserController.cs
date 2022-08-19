@@ -28,7 +28,6 @@ namespace WebApi.Controllers
         {
             try
             {
-                //return Ok(await _unitOfWork.Tags.Get());
                 return Ok(await _mediator.Send(new GetUsersQuery()));
             }
             catch (Exception)

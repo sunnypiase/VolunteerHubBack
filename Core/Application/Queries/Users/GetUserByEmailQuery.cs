@@ -5,8 +5,8 @@ using MediatR;
 
 namespace Application.Queries.Users
 {
-    public record GetUserByEmailQuery(string UserEmail) : IRequest<IEnumerable<User>>;
-    public class GetUserByEmailHandler : IRequestHandler<GetUserByEmailQuery, IEnumerable<User>>
+    public record GetUserByEmailQuery(string UserEmail) : IRequest<User>;
+    public class GetUserByEmailHandler : IRequestHandler<GetUserByEmailQuery, User>
     {
         private readonly IUnitOfWork _unitOfWork;
 
@@ -15,7 +15,7 @@ namespace Application.Queries.Users
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<IEnumerable<User>> Handle(GetUserByEmailQuery request, CancellationToken cancellationToken)
+        public async Task<User> Handle(GetUserByEmailQuery request, CancellationToken cancellationToken)
         {
             return await _unitOfWork.Users.Get(user => user.Email.Equals(request.UserEmail));
         }

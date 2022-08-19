@@ -12,6 +12,6 @@ namespace Domain.Models
         public string PhoneNumber { get; set; }
         public string Address { get; set; }
         public UserRole Role { get; set; }
-        public ICollection<Post> Posts { get; set; }
+        public ICollection<int> PostsId { get; set; }
     }
 }
