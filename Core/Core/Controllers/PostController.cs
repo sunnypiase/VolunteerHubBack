@@ -12,12 +12,10 @@ namespace WebApi.Controllers
     [ApiController]
     public class PostController : ControllerBase
     {
-        private readonly IUnitOfWork _unitOfWork;
         private readonly IMediator _mediator;
 
-        public PostController(IUnitOfWork unitOfWork, IMediator mediator)
+        public PostController(IMediator mediator)
         {
-            _unitOfWork = unitOfWork;
             _mediator = mediator;
         }
 

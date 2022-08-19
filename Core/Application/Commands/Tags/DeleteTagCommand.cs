@@ -2,11 +2,6 @@
 using Application.UnitOfWorks;
 using Domain.Models;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Commands.Tags
 {
@@ -21,15 +16,6 @@ namespace Application.Commands.Tags
             _unitOfWork = unitOfWork;
         }
 
-        //public async Task Handle(DeleteTagCommand request, CancellationToken cancellationToken)
-        //{
-        //    var result = await _unitOfWork.Tags.Delete(request.TagId);
-        //    if (result == false)
-        //    {
-        //        throw new NotFoundException(nameof(Tag), request.TagId);
-        //    }
-        //}
-
         public async Task<Unit> Handle(DeleteTagCommand request, CancellationToken cancellationToken)
         {
             var result = await _unitOfWork.Tags.Delete(request.TagId);
@@ -37,7 +23,7 @@ namespace Application.Commands.Tags
             {
                 throw new NotFoundException(nameof(Tag), request.TagId);
             }
-
+            await _unitOfWork.SaveChanges();
             return Unit.Value;
         }
     }

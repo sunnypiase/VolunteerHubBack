@@ -1,8 +1,6 @@
 ﻿using Application.Commands.Tags;
 using Application.Queries.Tags;
 using Application.Tags.Queries;
-using Application.UnitOfWorks;
-using Domain.Models;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,12 +11,10 @@ namespace Core.Controllers
     [ApiController]
     public class TagsController : ControllerBase
     {
-        private readonly IUnitOfWork _unitOfWork;
         private readonly IMediator _mediator;
 
-        public TagsController(IUnitOfWork unitOfWork, IMediator mediator)
+        public TagsController(IMediator mediator)
         {
-            _unitOfWork = unitOfWork;
             _mediator = mediator;
         }
 
