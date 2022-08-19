@@ -14,9 +14,9 @@ namespace Application.Posts.Queries
         {
             _unitOfWork = unitOfWork;
         }
-        public Task<IEnumerable<Post>> Handle(GetPostsQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<Post>> Handle(GetPostsQuery request, CancellationToken cancellationToken)
         {
-            return _unitOfWork.Posts.Get();
+            return await _unitOfWork.Posts.Get();
         }
     }
 }

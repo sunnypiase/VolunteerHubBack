@@ -1,10 +1,11 @@
 ﻿using Application.UnitOfWorks;
+using Domain.Enums;
+using Domain.Exceptions;
 using Domain.Models;
 using MediatR;
 
 namespace Application.Commands.PostConnections
 {
-
     public class CreatePostConnectionCommand : IRequest<PostConnection>
     {
         public string Title { get; set; }
@@ -22,16 +23,31 @@ namespace Application.Commands.PostConnections
         }
         public async Task<PostConnection> Handle(CreatePostConnectionCommand request, CancellationToken cancellationToken)
         {
-            PostConnection? res = new()
+            var res = new PostConnection()
             {
                 Title = request.Title,
                 Message = request.Message,
-                VolunteerPost = await _unitOfWork.Posts.GetById(request.VolunteerPostId),
-                NeedfulPost = await _unitOfWork.Posts.GetById(request.NeedfulPostId),
+                VolunteerPost = await PostValidation(request.VolunteerPostId, PostType.PROPOSITION),
+                NeedfulPost = await PostValidation(request.NeedfulPostId, PostType.REQUEST)
             };
             await _unitOfWork.PostConnections.Insert(res);
             await _unitOfWork.SaveChanges();
             return res;
+        }
+        private async Task<Post> PostValidation(int id, PostType expectedType)
+        {
+            var post = await _unitOfWork.Posts.GetById(id);
+
+            if (post == null)
+            {
+                throw new PostNotFoundException(id.ToString());
+            }
+            else if (post.PostType != expectedType)
+            {
+                throw new WrongPostTypeException(id.ToString(), post.PostType.ToString(), expectedType.ToString());
+            }
+
+            return post;
         }
 
     }

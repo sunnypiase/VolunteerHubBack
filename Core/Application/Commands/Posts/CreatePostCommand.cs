@@ -1,5 +1,6 @@
 ﻿using Application.Services;
 using Application.UnitOfWorks;
+using Domain.Enums;
 using Domain.Models;
 using MediatR;
 using System.Text.Json.Serialization;
@@ -28,14 +29,21 @@ namespace Application.Commands.Posts
         }
         public async Task<Post> Handle(CreatePostCommand request, CancellationToken cancellationToken)
         {
+            var postOwner = await _unitOfWork.Users.GetById(request.UserId);
+            if (postOwner == null)
+            {
+                throw new UserNotFoundException(request.UserId.ToString());
+            }
+            var postType = postOwner.Role == UserRole.Needful ? PostType.REQUEST : PostType.PROPOSITION;
             var res = new Post()
             {
                 Title = request.Title,
                 Description = request.Description,
                 UserId = request.UserId,
-                User = await _unitOfWork.Users.GetById(request.UserId),
+                User = postOwner,
                 Tags = await GetTagsByIdsAsync(request.TagIds),
-                Image = request.Image
+                Image = request.Image,
+                PostType = postType
             };
             await _unitOfWork.Posts.Insert(res);
             await _unitOfWork.SaveChanges();
@@ -44,10 +52,10 @@ namespace Application.Commands.Posts
 
         private async Task<ICollection<Tag>> GetTagsByIdsAsync(ICollection<int> tagIds)
         {
-            var tags = new List<Tag>(); 
+            var tags = new List<Tag>();
             foreach (var tagId in tagIds)
             {
-                tags.Add( await _unitOfWork.Tags.GetById(tagId));
+                tags.Add(await _unitOfWork.Tags.GetById(tagId));
             }
             return tags;
         }
