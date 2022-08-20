@@ -114,7 +114,7 @@ namespace WebApi.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving data from the database");
             }
         }
-        [HttpGet("{id:int}")]
+        [HttpGet("{email}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetUserByEmail(string email)
         {

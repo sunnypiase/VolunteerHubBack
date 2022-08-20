@@ -34,6 +34,17 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+//enabling cors
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(
+        builder =>
+        {
+            builder.WithOrigins("http://localhost:3000");
+            builder.AllowCredentials();
+        });
+});
+
 builder.Services.AddControllers().AddNewtonsoftJson(options =>
 {
     options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
@@ -54,10 +65,17 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseCookiePolicy(new CookiePolicyOptions
 {
-    MinimumSameSitePolicy = SameSiteMode.Strict,
+    MinimumSameSitePolicy = SameSiteMode.None,
     HttpOnly = HttpOnlyPolicy.Always,
     Secure = CookieSecurePolicy.Always
 });
+
+app.UseCors(x => x
+        .WithOrigins("http://localhost:3000") // путь к нашему SPA клиенту
+        .AllowCredentials()
+        .AllowAnyMethod()
+        .AllowAnyHeader()
+);
 
 //Take jwt from cookies and paste it into Authorization header
 app.UseMiddleware<TokenFromCookiesMiddleware>();
