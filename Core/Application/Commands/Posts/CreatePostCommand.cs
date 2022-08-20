@@ -32,7 +32,7 @@ namespace Application.Commands.Posts
             var postOwner = await _unitOfWork.Users.GetById(request.UserId);
             if (postOwner == null)
             {
-                throw new UserNotFoundException(request.UserId.ToString());
+                throw new UserNotFoundException(request.UserId);
             }
             var postType = postOwner.Role == UserRole.Needful ? PostType.REQUEST : PostType.PROPOSITION;
             var res = new Post()

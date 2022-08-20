@@ -1,5 +1,8 @@
-﻿using Application.Commands.Users;
+﻿using Application.Commands.Posts;
+using Application.Commands.Users;
+using Application.Queries.Users;
 using Domain.Exceptions;
+using Domain.Models;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -72,6 +75,66 @@ namespace WebApi.Controllers
         {
             HttpContext.Response.Cookies.Delete("token");
             return Ok("Successfully logged out");
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetUsers()
+        {
+            try
+            {
+                return Ok(await _mediator.Send(new GetUsersQuery()));
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving data from the database");
+            }
+        }
+
+        [HttpGet("{id:int}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetUser(int id)
+        {
+            try
+            {
+
+                User? result = await _mediator.Send(new GetUserByIdQuery(id));
+                if (result == null)
+                {
+                    return NotFound();
+                }
+                return Ok(result);
+            }
+            catch (UserNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving data from the database");
+            }
+        }
+        [HttpGet("{id:int}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetUserByEmail(string email)
+        {
+            try
+            {
+                User? result = await _mediator.Send(new GetUserByEmailQuery(email));
+                if (result == null)
+                {
+                    return NotFound();
+                }
+                return Ok(result);
+            }
+            catch(UserNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving data from the database");
+            }
         }
     }
 }
