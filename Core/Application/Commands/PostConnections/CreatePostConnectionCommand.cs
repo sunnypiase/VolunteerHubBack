@@ -23,16 +23,17 @@ namespace Application.Commands.PostConnections
         }
         public async Task<PostConnection> Handle(CreatePostConnectionCommand request, CancellationToken cancellationToken)
         {
-            var res = new PostConnection()
+            var postConnection = new PostConnection()
             {
                 Title = request.Title,
                 Message = request.Message,
                 VolunteerPost = await PostValidation(request.VolunteerPostId, PostType.PROPOSITION),
                 NeedfulPost = await PostValidation(request.NeedfulPostId, PostType.REQUEST)
             };
-            await _unitOfWork.PostConnections.Insert(res);
+
+            await _unitOfWork.PostConnections.Insert(postConnection);
             await _unitOfWork.SaveChanges();
-            return res;
+            return postConnection;
         }
         private async Task<Post> PostValidation(int id, PostType expectedType)
         {
@@ -49,6 +50,5 @@ namespace Application.Commands.PostConnections
 
             return post;
         }
-
     }
 }

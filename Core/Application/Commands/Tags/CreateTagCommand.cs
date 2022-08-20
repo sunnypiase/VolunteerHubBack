@@ -20,6 +20,7 @@ namespace Application.Commands.Tags
             {
                 Name = request.Name
             };
+
             await _unitOfWork.Tags.Insert(tag);
             await _unitOfWork.SaveChanges();
             return tag;

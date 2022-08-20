@@ -13,9 +13,9 @@ namespace Application.Tags.Queries
         {
             _unitOfWork = unitOfWork;
         }
-        public Task<IEnumerable<Tag>> Handle(GetTagsQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<Tag>> Handle(GetTagsQuery request, CancellationToken cancellationToken)
         {
-            return _unitOfWork.Tags.Get();
+            return await _unitOfWork.Tags.Get();
         }
     }
 }

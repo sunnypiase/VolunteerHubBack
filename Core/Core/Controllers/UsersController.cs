@@ -97,17 +97,11 @@ namespace WebApi.Controllers
         {
             try
             {
-
-                User? result = await _mediator.Send(new GetUserByIdQuery(id));
-                if (result == null)
-                {
-                    return NotFound();
-                }
-                return Ok(result);
+                return Ok(await _mediator.Send(new GetUserByIdQuery(id)));
             }
             catch (UserNotFoundException ex)
             {
-                return NotFound(ex.Message);
+                return BadRequest(ex.Message);
             }
             catch (Exception)
             {
@@ -120,16 +114,11 @@ namespace WebApi.Controllers
         {
             try
             {
-                User? result = await _mediator.Send(new GetUserByEmailQuery(email));
-                if (result == null)
-                {
-                    return NotFound();
-                }
-                return Ok(result);
+                return Ok(await _mediator.Send(new GetUserByEmailQuery(email)));
             }
-            catch(UserNotFoundException ex)
+            catch (UserNotFoundException ex)
             {
-                return NotFound(ex.Message);
+                return BadRequest(ex.Message);
             }
             catch (Exception)
             {

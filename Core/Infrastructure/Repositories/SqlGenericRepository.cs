@@ -37,7 +37,7 @@ namespace Infrastructure.Repositories
 
             return await query.ToListAsync();
         }
-        public virtual async Task<TEntity> GetById(object id)
+        public virtual async Task<TEntity?> GetById<IdType>(IdType id)
         {
             return await _entity.FindAsync(id);
         }
@@ -46,22 +46,20 @@ namespace Infrastructure.Repositories
             await _entity.AddAsync(entity);
             return true;
         }
-        public virtual async Task<bool> Delete(object id)
+        public virtual async Task<bool> Delete<IdType>(IdType id)
         {
             TEntity? entityToDelete = await _entity.FindAsync(id);
 
             if (entityToDelete != null)
             {
-                // TODO make it work
                 _entity.Remove(entityToDelete);
                 return true;
             }
             return false;
         }
-        public virtual async Task<bool> Update(TEntity entityToUpdate)//Maybe i should throw NotImplementedException here???
+        public virtual Task<bool> Update(TEntity entityToUpdate)
         {
-            await Task.Run(() => _entity.Update(entityToUpdate));
-            return true;
+            throw new NotImplementedException();
         }
     }
 }

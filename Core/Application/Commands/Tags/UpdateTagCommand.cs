@@ -1,12 +1,7 @@
-﻿using Application.Common.Exceptions;
-using Application.UnitOfWorks;
+﻿using Application.UnitOfWorks;
+using Domain.Exceptions;
 using Domain.Models;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Commands.Tags
 {
@@ -14,7 +9,6 @@ namespace Application.Commands.Tags
     {
         public int TagId { get; set; }
         public string Name { get; set; }
-        //public ICollection<Post> Posts { get; set; }
     }
 
     public class UpdateTagHandler : IRequestHandler<UpdateTagCommand, Tag>
@@ -27,17 +21,17 @@ namespace Application.Commands.Tags
         }
         public async Task<Tag> Handle(UpdateTagCommand request, CancellationToken cancellationToken)
         {
-            var tag = _unitOfWork.Tags.GetById(request.TagId).Result;
-
-            if(tag == null)
+            var tag = new Tag()
             {
-                throw new NotFoundException(nameof(Tag), request.TagId);
-            }
-            
-            tag.Name = request.Name;
-            //tag.Posts = request.Posts;
+                TagId = request.TagId,
+                Name = request.Name
+            };
 
-            await _unitOfWork.Tags.Update(tag);
+            if (!await _unitOfWork.Tags.Update(tag))
+            {
+                throw new TagNotFoundException(tag.TagId);
+            }
+
             await _unitOfWork.SaveChanges();
             return tag;
         }

@@ -1,6 +1,5 @@
-﻿using Application.Common.Exceptions;
-using Application.UnitOfWorks;
-using Domain.Models;
+﻿using Application.UnitOfWorks;
+using Domain.Exceptions;
 using MediatR;
 
 namespace Application.Commands.Tags
@@ -18,11 +17,11 @@ namespace Application.Commands.Tags
 
         public async Task<Unit> Handle(DeleteTagCommand request, CancellationToken cancellationToken)
         {
-            var result = await _unitOfWork.Tags.Delete(request.TagId);
-            if (result == false)
+            if (!await _unitOfWork.Tags.Delete(request.TagId))
             {
-                throw new NotFoundException(nameof(Tag), request.TagId);
+                throw new TagNotFoundException(request.TagId);
             }
+
             await _unitOfWork.SaveChanges();
             return Unit.Value;
         }

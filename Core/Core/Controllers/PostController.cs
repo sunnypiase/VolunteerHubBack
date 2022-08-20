@@ -1,7 +1,7 @@
 ﻿using Application.Commands.Posts;
 using Application.Posts.Queries;
 using Application.Queries.Posts;
-using Domain.Models;
+using Domain.Exceptions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -37,6 +37,10 @@ namespace WebApi.Controllers
             try
             {
                 return Ok(await _mediator.Send(new GetPostByIdQuery(id)));
+            }
+            catch(PostException ex)
+            {
+                return BadRequest(ex.Message);
             }
             catch (Exception)
             {

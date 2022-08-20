@@ -30,12 +30,15 @@ namespace Application.Commands.Posts
         public async Task<Post> Handle(CreatePostCommand request, CancellationToken cancellationToken)
         {
             var postOwner = await _unitOfWork.Users.GetById(request.UserId);
+
             if (postOwner == null)
             {
                 throw new UserNotFoundException(request.UserId);
             }
+
             var postType = postOwner.Role == UserRole.Needful ? PostType.REQUEST : PostType.PROPOSITION;
-            var res = new Post()
+
+            var post = new Post()
             {
                 Title = request.Title,
                 Description = request.Description,
@@ -45,9 +48,10 @@ namespace Application.Commands.Posts
                 Image = request.Image,
                 PostType = postType
             };
-            await _unitOfWork.Posts.Insert(res);
+
+            await _unitOfWork.Posts.Insert(post);
             await _unitOfWork.SaveChanges();
-            return res;
+            return post;
         }
 
         private async Task<ICollection<Tag>> GetTagsByIdsAsync(ICollection<int> tagIds)
@@ -55,7 +59,11 @@ namespace Application.Commands.Posts
             var tags = new List<Tag>();
             foreach (var tagId in tagIds)
             {
-                tags.Add(await _unitOfWork.Tags.GetById(tagId));
+                var tag = await _unitOfWork.Tags.GetById(tagId);
+                if (tag != null)
+                {
+                    tags.Add(tag);
+                }
             }
             return tags;
         }

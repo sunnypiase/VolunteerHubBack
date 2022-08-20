@@ -1,5 +1,4 @@
 ﻿using Application.Commands.Posts;
-using Application.Queries.Posts;
 using Application.UnitOfWorks;
 using Domain.Models;
 using MediatR;

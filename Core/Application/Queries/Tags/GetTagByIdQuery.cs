@@ -1,12 +1,7 @@
-﻿using Application.Common.Exceptions;
-using Application.UnitOfWorks;
+﻿using Application.UnitOfWorks;
+using Domain.Exceptions;
 using Domain.Models;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Queries.Tags
 {
@@ -19,13 +14,15 @@ namespace Application.Queries.Tags
         {
             _unitOfWork = unitOfWork;
         }
-        public Task<Tag> Handle(GetTagByIdQuery request, CancellationToken cancellationToken)
+        public async Task<Tag> Handle(GetTagByIdQuery request, CancellationToken cancellationToken)
         {
-            var result = _unitOfWork.Tags.GetById(request.TagId);
-            if(result.Result == null)
+            var result = await _unitOfWork.Tags.GetById(request.TagId);
+
+            if(result == null)
             {
-                throw new NotFoundException(nameof(Tag), request.TagId);
+                throw new TagNotFoundException(request.TagId);
             }
+
             return result;
         }
     }
