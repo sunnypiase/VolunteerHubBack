@@ -23,16 +23,16 @@ jobs:
           include-prerelease: true
 
       - name: Build with dotnet
-        run: dotnet build Core/Core/Core.csproj
+        run: dotnet build Core/Core/WebApi.csproj
 
       - name: dotnet publish
-        run: dotnet publish Core/Core/Core.csproj
+        run: dotnet publish Core/Core/WebApi.csproj
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
         with:
           name: .net-app
-          path: Core/Core/Core.csproj
+          path: Core/Core/WebApi.csproj
 
   deploy:
     runs-on: windows-latest
