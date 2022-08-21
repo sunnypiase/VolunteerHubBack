@@ -1,6 +1,5 @@
 ﻿using Application.Commands.PostConnections;
 using Application.Queries.PostConnections;
-using Domain.Exceptions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -23,48 +22,23 @@ namespace WebApi.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetPostConnections()
         {
-            try
-            {
-                return Ok(await _mediator.Send(new GetPostConnectionsQuery()));
-            }
-            catch (Exception)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving data from the database");
-            }
+            return Ok(await _mediator.Send(new GetPostConnectionsQuery()));
         }
 
         [HttpGet("postConnections")]
         [Authorize]
         public async Task<IActionResult> GetPostConnectionsOfAuthorizedUser()
         {
-            try
-            {
-                return Ok(await _mediator.Send(new GetPostConnectionsByUserQuery(new JwtSecurityTokenHandler()
-                    .ReadJwtToken(Request.Cookies["token"])
-                    .Claims)));
-            }
-            catch (Exception)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving data from the database");
-            }
+            return Ok(await _mediator.Send(new GetPostConnectionsByUserQuery(new JwtSecurityTokenHandler()
+                .ReadJwtToken(Request.Cookies["token"])
+                .Claims)));
         }
 
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> Post([FromBody] CreatePostConnectionCommand post)
         {
-            try
-            {
-                return Ok(await _mediator.Send(post));
-            }
-            catch (PostException postException)
-            {
-                return BadRequest(postException.Message);
-            }
-            catch (Exception)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving data from the database");
-            }
+            return Ok(await _mediator.Send(post));
         }
     }
 }

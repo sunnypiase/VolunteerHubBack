@@ -1,6 +1,6 @@
-﻿namespace Application.Commands.Posts
+﻿namespace Domain.Exceptions
 {
-    public class UserNotFoundException : Exception
+    public class UserNotFoundException : BadRequestException
     {
         public UserNotFoundException(int userId) : base($"User with id = {userId} was not found")
         {

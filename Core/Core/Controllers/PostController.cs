@@ -1,7 +1,6 @@
 ﻿using Application.Commands.Posts;
 using Application.Posts.Queries;
 using Application.Queries.Posts;
-using Domain.Exceptions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,48 +20,19 @@ namespace WebApi.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            try
-            {
-                return Ok(await _mediator.Send(new GetPostsQuery()));
-            }
-            catch (Exception)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving data from the database");
-            }
+            return Ok(await _mediator.Send(new GetPostsQuery()));
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
-            try
-            {
-                return Ok(await _mediator.Send(new GetPostByIdQuery(id)));
-            }
-            catch(PostException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (Exception)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving data from the database");
-            }
+            return Ok(await _mediator.Send(new GetPostByIdQuery(id)));
         }
 
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] CreatePostCommand post)
         {
-            try
-            {
-                return Ok(await _mediator.Send(post));
-            }
-            catch(UserNotFoundException userNotFound)
-            {
-                return BadRequest(userNotFound.Message);
-            }
-            catch (Exception)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving data from the database");
-            }
+            return Ok(await _mediator.Send(post));
         }
     }
 }

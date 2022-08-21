@@ -1,24 +1,17 @@
-using Application.Tags.Queries; // ?
-using Application.UnitOfWorks;
-using Infrastructure;
-using Infrastructure.UnitOfWorks;
-using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using Application.Services;
 using Microsoft.AspNetCore.CookiePolicy;
+using Microsoft.IdentityModel.Tokens;
 using WebApi.Middlewares;
 using Newtonsoft.Json;
+using System.Text;
+using Infrastructure;
+using Application;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddTransient<HashingService>();
 builder.Services.AddInfrastructureServices(builder.Configuration);
-
-builder.Services.AddMediatR(typeof(GetTagsQuery).Assembly); // ?
+builder.Services.AddApplicationServices();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -71,12 +64,13 @@ app.UseCookiePolicy(new CookiePolicyOptions
 });
 
 app.UseCors(x => x
-        .WithOrigins("http://localhost:3000") // путь к нашему SPA клиенту
+        .WithOrigins("http://localhost:3000") // path to our SPA client
         .AllowCredentials()
         .AllowAnyMethod()
         .AllowAnyHeader()
 );
 
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 //Take jwt from cookies and paste it into Authorization header
 app.UseMiddleware<TokenFromCookiesMiddleware>();
 app.UseAuthentication();

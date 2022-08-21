@@ -1,8 +1,5 @@
-﻿using Application.Commands.Posts;
-using Application.Commands.Users;
+﻿using Application.Commands.Users;
 using Application.Queries.Users;
-using Domain.Exceptions;
-using Domain.Models;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -23,50 +20,20 @@ namespace WebApi.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginUserCommand loginUserCommand)
         {
-            try
+            var token = await _mediator.Send(loginUserCommand);
+            HttpContext.Response.Cookies.Append("token", token, new CookieOptions
             {
-                if (ModelState.IsValid)
-                {
-                    var token = await _mediator.Send(loginUserCommand);
-                    HttpContext.Response.Cookies.Append("token", token, new CookieOptions
-                    {
-                        MaxAge = TimeSpan.FromDays(1)
-                    });
-                    return Ok("Successfully logged in");
-                }
-                return BadRequest("User is not valid");
-            }
-            catch (WrongUserEmailOrPasswordException wrongDataException)
-            {
-                return BadRequest(wrongDataException.Message);
-            }
-            catch (Exception)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving data from the database");
-            }
+                MaxAge = TimeSpan.FromDays(1)
+            });
+            return Ok("Successfully logged in");
         }
 
         [AllowAnonymous]
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterUserCommand registerUserCommand)
         {
-            try
-            {
-                if (ModelState.IsValid)
-                {
-                    await _mediator.Send(registerUserCommand);
-                    return Ok("Successfully registered!");
-                }
-                return BadRequest("User is not valid");
-            }
-            catch (EmailTakenByOtherUserException emailException)
-            {
-                return BadRequest(emailException.Message);
-            }
-            catch (Exception)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving data from the database");
-            }
+            await _mediator.Send(registerUserCommand);
+            return Ok("Successfully registered!");
         }
 
         [Authorize]
@@ -81,49 +48,21 @@ namespace WebApi.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetUsers()
         {
-            try
-            {
-                return Ok(await _mediator.Send(new GetUsersQuery()));
-            }
-            catch (Exception)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving data from the database");
-            }
+            return Ok(await _mediator.Send(new GetUsersQuery()));
         }
 
         [HttpGet("{id:int}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetUser(int id)
         {
-            try
-            {
-                return Ok(await _mediator.Send(new GetUserByIdQuery(id)));
-            }
-            catch (UserNotFoundException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (Exception)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving data from the database");
-            }
+            return Ok(await _mediator.Send(new GetUserByIdQuery(id)));
         }
+
         [HttpGet("{email}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetUserByEmail(string email)
         {
-            try
-            {
-                return Ok(await _mediator.Send(new GetUserByEmailQuery(email)));
-            }
-            catch (UserNotFoundException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (Exception)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving data from the database");
-            }
+            return Ok(await _mediator.Send(new GetUserByEmailQuery(email)));
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Application.Services;
 using Application.UnitOfWorks;
 using Domain.Enums;
+using Domain.Exceptions;
 using Domain.Models;
 using MediatR;
 using System.Text.Json.Serialization;

@@ -1,5 +1,5 @@
-﻿using Application.Commands.Posts;
-using Application.UnitOfWorks;
+﻿using Application.UnitOfWorks;
+using Domain.Exceptions;
 using Domain.Models;
 using MediatR;
 

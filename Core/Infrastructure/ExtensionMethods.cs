@@ -1,6 +1,8 @@
 ﻿using Application.Repositories.Abstractions;
+using Application.UnitOfWorks;
 using Domain.Abstractions;
 using Infrastructure.Repositories;
+using Infrastructure.UnitOfWorks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,6 +21,7 @@ namespace Infrastructure
             services.AddScoped<ITagRepository, TagRepository>();
             services.AddScoped<IPostRepository, PostRepository>();
             services.AddScoped<IPostConnectionRepository, PostConnectionRepository>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
         }
     }
 }
