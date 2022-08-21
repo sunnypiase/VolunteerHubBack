@@ -26,13 +26,13 @@ jobs:
         run: dotnet build Core/Core/WebApi.csproj
 
       - name: dotnet publish
-        run: dotnet publish -c Release Core/Core/WebApi.csproj
+        run: dotnet publish Core/Core/WebApi.csproj -c Release -o Core
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
         with:
           name: .net-app
-          path: Core/Core/WebApi.csproj
+          path: Core/**
 
   deploy:
     runs-on: windows-latest
