@@ -6,8 +6,15 @@ using Newtonsoft.Json;
 using System.Text;
 using Infrastructure;
 using Application;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog((hostBuilderContext, configuration) =>
+{
+    configuration
+    .ReadFrom.Configuration(hostBuilderContext.Configuration);
+});
 
 // Add services to the container.
 builder.Services.AddInfrastructureServices(builder.Configuration);
@@ -56,6 +63,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseSerilogRequestLogging();
 app.UseCookiePolicy(new CookiePolicyOptions
 {
     MinimumSameSitePolicy = SameSiteMode.None,

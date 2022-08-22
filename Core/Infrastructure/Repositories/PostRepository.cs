@@ -1,5 +1,7 @@
 ﻿using Domain.Abstractions;
 using Domain.Models;
+using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Infrastructure.Repositories
 {
@@ -24,6 +26,14 @@ namespace Infrastructure.Repositories
                 return true;
             }
             return false;
+        }
+        public override async Task<Post?> GetById<IdType>(IdType id)
+        {
+            if (id == null)
+            {
+                return null;
+            }
+            return await _entity.Include("User").Include(post => post.Tags).FirstOrDefaultAsync(post => post.PostId == int.Parse(id.ToString()));
         }
     }
 }
