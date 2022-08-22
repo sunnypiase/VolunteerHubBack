@@ -18,7 +18,7 @@ namespace Infrastructure.Repositories
             Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
             string commaSeparatedIncludeProperties = "")
         {
-            IQueryable<TEntity> query = _entity;
+            IQueryable<TEntity> query = _entity.AsNoTracking();
 
             if (filter != null)
             {
