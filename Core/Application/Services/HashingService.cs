@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 
 namespace Application.Services
 {
+    // TODO: As for me, the hashing logic fits better into the Infrastructure layer
     public class HashingService
     {
         private readonly IConfiguration _configuration;

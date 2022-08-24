@@ -18,6 +18,7 @@ namespace Infrastructure
                 optionsBuilder.UseSqlServer(configuration.GetConnectionString("DefaultConnection"),
                     x => x.MigrationsAssembly("Infrastructure")));
 
+            // TODO: Why do you register the repos as Scoped, not Transient?
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ITagRepository, TagRepository>();
             services.AddScoped<IPostRepository, PostRepository>();

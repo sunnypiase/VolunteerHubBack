@@ -79,6 +79,7 @@ app.UseMiddleware<ExceptionHandlingMiddleware>();
 //Take jwt from cookies and paste it into Authorization header
 app.UseMiddleware<TokenFromCookiesMiddleware>();
 app.UseAuthentication();
+// TODO: Here is a compile warning - "the call to UseAuthorization should appear between app.UseRouting() and app.UseEndpoints"
 app.UseAuthorization();
 
 
