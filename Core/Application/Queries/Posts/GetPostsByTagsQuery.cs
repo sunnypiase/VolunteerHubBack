@@ -16,6 +16,7 @@ namespace Application.Queries.Posts
         }
         public async Task<IEnumerable<Post>> Handle(GetPostsByTagsQuery request, CancellationToken cancellationToken)
         {
+            // TODO: I would propose you to profile this query since there is a closure, which will probably not be translated to SQL
             return await _unitOfWork.Posts.Get(post => request.Tags.All(tag => post.Tags.Contains(tag)));
         }
     }

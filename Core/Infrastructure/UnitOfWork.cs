@@ -43,12 +43,15 @@ namespace Infrastructure.UnitOfWorks
             {
                 if (disposing)
                 {
+                    // TODO: Are you sure that the UnitOfWork should control DbContext disposal, not the framework itself?
+                    // Seems like UnitOfWork does not create the DbContext, so it should not dispose it
                     _applicationContext.Dispose();
                 }
             }
             disposed = true;
         }
 
+        // TODO: Where do you call this method?
         public void Dispose()
         {
             Dispose(true);

@@ -16,6 +16,7 @@ namespace Infrastructure.Repositories
         public virtual async Task<IEnumerable<TEntity>> Get(
             Expression<Func<TEntity, bool>> filter = null,
             Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
+            // TODO: Why you pass the array as comma separated string, not as a string[]?
             string commaSeparatedIncludeProperties = "")
         {
             IQueryable<TEntity> query = _entity;

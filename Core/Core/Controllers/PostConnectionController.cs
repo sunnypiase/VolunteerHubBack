@@ -19,7 +19,7 @@ namespace WebApi.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")] // TODO: I would propose to extract roles to constants since the "Admin" literal appears multiple times
         public async Task<IActionResult> GetPostConnections()
         {
             return Ok(await _mediator.Send(new GetPostConnectionsQuery()));

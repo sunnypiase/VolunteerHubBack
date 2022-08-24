@@ -11,7 +11,7 @@ namespace Application.Commands.Posts
     public record CreatePostCommand : IRequest<Post>
     {
         // can there be a post without an image or tags?
-        public string Title { get; set; }
+        public string Title { get; set; } // TODO: Since records are read-only, they should not have setters
         public string Description { get; set; }
         public int UserId { get; set; }
         public ICollection<int> TagIds { get; set; }
