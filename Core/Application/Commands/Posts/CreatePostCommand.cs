@@ -17,7 +17,7 @@ namespace Application.Commands.Posts
         public ICollection<int> TagIds { get; set; }
 
         [JsonConverter(typeof(ByteArrayConverter))]
-        public byte[] Image { get; set; }
+        public byte[]? Image { get; set; } // TODO - set to not nullable
     }
 
     public class CreatePostHandler : IRequestHandler<CreatePostCommand, Post>
@@ -46,7 +46,8 @@ namespace Application.Commands.Posts
                 UserId = request.UserId,
                 User = postOwner,
                 Tags = await GetTagsByIdsAsync(request.TagIds),
-                Image = request.Image,
+                //Image = request.Image,
+                Image = new byte[] {1,2,3,4}, // TODO - remove this
                 PostType = postType
             };
 

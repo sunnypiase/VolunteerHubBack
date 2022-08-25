@@ -1,6 +1,7 @@
 ﻿using Application.UnitOfWorks;
 using Domain.Models;
 using MediatR;
+using System.Linq.Expressions;
 
 namespace Application.Queries.Posts
 {
@@ -16,7 +17,11 @@ namespace Application.Queries.Posts
         }
         public async Task<IEnumerable<Post>> Handle(GetPostsByTagsQuery request, CancellationToken cancellationToken)
         {
-            return await _unitOfWork.Posts.Get(post => request.Tags.All(tag => post.Tags.Contains(tag)));
+            return await _unitOfWork.Posts.Get(
+                filter: post => !post.Tags.Except(request.Tags).Any(), 
+                commaSeparatedIncludeProperties: "Tags"
+                );
+            //return await _unitOfWork.Posts.Get(post => request.Tags.All(tag => post.Tags.Contains(tag)));
         }
     }
 }
