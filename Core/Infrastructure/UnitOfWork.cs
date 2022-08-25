@@ -1,8 +1,7 @@
-﻿using Application.Repositories.Abstractions;
-using Application.UnitOfWorks;
-using Domain.Abstractions;
+﻿using Application.Repositories;
+using Application.Repositories.Abstractions;
 
-namespace Infrastructure.UnitOfWorks
+namespace Infrastructure
 {
     public class UnitOfWork : IUnitOfWork
     {
@@ -31,28 +30,9 @@ namespace Infrastructure.UnitOfWorks
         public ITagRepository Tags => _tagRepository;
         public IPostConnectionRepository PostConnections => _postConnectionRepository;
 
-        public async Task SaveChanges()
+        public async Task SaveChangesAsync()
         {
             await _applicationContext.SaveChangesAsync();
-        }
-
-        private bool disposed = false;
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposed)
-            {
-                if (disposing)
-                {
-                    _applicationContext.Dispose();
-                }
-            }
-            disposed = true;
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
         }
     }
 }

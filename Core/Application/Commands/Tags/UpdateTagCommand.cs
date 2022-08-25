@@ -1,4 +1,4 @@
-﻿using Application.UnitOfWorks;
+﻿using Application.Repositories;
 using Domain.Exceptions;
 using Domain.Models;
 using MediatR;
@@ -7,8 +7,13 @@ namespace Application.Commands.Tags
 {
     public record UpdateTagCommand : IRequest<Tag>
     {
-        public int TagId { get; set; }
-        public string Name { get; set; }
+        public int TagId { get; init; }
+        public string Name { get; init; }
+        public UpdateTagCommand(int tagId, string name)
+        {
+            TagId = tagId;
+            Name = name;
+        }
     }
 
     public class UpdateTagHandler : IRequestHandler<UpdateTagCommand, Tag>
@@ -27,12 +32,12 @@ namespace Application.Commands.Tags
                 Name = request.Name
             };
 
-            if (!await _unitOfWork.Tags.Update(tag))
+            if (!await _unitOfWork.Tags.UpdateAsync(tag))
             {
                 throw new TagNotFoundException(tag.TagId);
             }
 
-            await _unitOfWork.SaveChanges();
+            await _unitOfWork.SaveChangesAsync();
             return tag;
         }
     }

@@ -57,11 +57,11 @@ namespace Core.Migrations
 
             modelBuilder.Entity("Domain.Models.PostConnection", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("PostConnectionId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PostConnectionId"), 1L, 1);
 
                     b.Property<string>("Message")
                         .IsRequired()
@@ -77,7 +77,7 @@ namespace Core.Migrations
                     b.Property<int>("VolunteerPostPostId")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.HasKey("PostConnectionId");
 
                     b.HasIndex("NeedfulPostPostId");
 

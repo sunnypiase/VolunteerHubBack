@@ -1,15 +1,15 @@
-﻿using Domain.Abstractions;
+﻿using Application.Repositories.Abstractions;
 using Domain.Models;
 
 namespace Infrastructure.Repositories
 {
-    public class UserRepository : SqlGenericRepository<User>, IUserRepository
+    public class UserRepository : SqlGenericRepository<User, int>, IUserRepository
     {
         public UserRepository(ApplicationContext applicationContext) : base(applicationContext)
         {
         }
 
-        public override async Task<bool> Update(User entityToUpdate)
+        public override async Task<bool> UpdateAsync(User entityToUpdate)
         {
             User? userToUpdate = await _entity.FindAsync(entityToUpdate.UserId);
 

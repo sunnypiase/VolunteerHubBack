@@ -2,7 +2,7 @@
 {
     public enum PostType
     {
-        REQUEST,
-        PROPOSITION
+        Request,
+        Proposition
     }
 }

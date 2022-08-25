@@ -16,11 +16,11 @@ namespace WebApi.Middlewares
             _next = next;
             _logger = loggerFactory.CreateLogger(nameof(ExceptionHandlingMiddleware));
         }
-        public async Task Invoke(HttpContext context)
+        public async Task InvokeAsync(HttpContext context)
         {
             try
             {
-                await _next(context);
+                await _next.Invoke(context);
             }
             catch (Exception ex)
             {

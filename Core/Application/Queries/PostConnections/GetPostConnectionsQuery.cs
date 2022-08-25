@@ -1,4 +1,4 @@
-﻿using Application.UnitOfWorks;
+﻿using Application.Repositories;
 using Domain.Models;
 using MediatR;
 
@@ -16,7 +16,7 @@ namespace Application.Queries.PostConnections
         }
         public async Task<IEnumerable<PostConnection>> Handle(GetPostConnectionsQuery request, CancellationToken cancellationToken)
         {
-            return await _unitOfWork.PostConnections.Get(commaSeparatedIncludeProperties: "VolunteerPost,NeedfulPost");
+            return await _unitOfWork.PostConnections.GetAsync(includeProperties: new string[] { "VolunteerPost", "NeedfulPost" });
         }
     }
 }

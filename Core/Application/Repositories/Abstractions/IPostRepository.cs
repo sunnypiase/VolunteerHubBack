@@ -1,8 +1,8 @@
 ﻿using Domain.Models;
 
-namespace Domain.Abstractions
+namespace Application.Repositories.Abstractions
 {
-    public interface IPostRepository : IGenericRepository<Post>
+    public interface IPostRepository : IGenericRepository<Post, int>
     {
     }
 }

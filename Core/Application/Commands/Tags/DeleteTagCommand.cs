@@ -1,10 +1,17 @@
-﻿using Application.UnitOfWorks;
+﻿using Application.Repositories;
 using Domain.Exceptions;
 using MediatR;
 
 namespace Application.Commands.Tags
 {
-    public record DeleteTagCommand(int TagId) : IRequest;
+    public record DeleteTagCommand : IRequest
+    {
+        public int TagId { get; init; }
+        public DeleteTagCommand(int tagId)
+        {
+            TagId = tagId;
+        }
+    }
 
     public class DeleteTagHandler : IRequestHandler<DeleteTagCommand>
     {
@@ -17,12 +24,12 @@ namespace Application.Commands.Tags
 
         public async Task<Unit> Handle(DeleteTagCommand request, CancellationToken cancellationToken)
         {
-            if (!await _unitOfWork.Tags.Delete(request.TagId))
+            if (!await _unitOfWork.Tags.DeleteAsync(request.TagId))
             {
                 throw new TagNotFoundException(request.TagId);
             }
 
-            await _unitOfWork.SaveChanges();
+            await _unitOfWork.SaveChangesAsync();
             return Unit.Value;
         }
     }

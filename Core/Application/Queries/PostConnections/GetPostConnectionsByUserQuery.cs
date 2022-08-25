@@ -1,4 +1,4 @@
-﻿using Application.UnitOfWorks;
+﻿using Application.Repositories;
 using Domain.Enums;
 using Domain.Models;
 using MediatR;
@@ -7,12 +7,19 @@ using System.Security.Claims;
 
 namespace Application.Queries.PostConnections
 {
-    public record GetPostConnectionsByUserQuery(IEnumerable<Claim> Claims) : IRequest<IEnumerable<PostConnection>>;
+    public record GetPostConnectionsByUserQuery : IRequest<IEnumerable<PostConnection>>
+    {
+        public IEnumerable<Claim> Claims { get; init; }
+        public GetPostConnectionsByUserQuery(IEnumerable<Claim> claims)
+        {
+            Claims = claims;
+        }
+    }
 
-    public class GetPostConnectionsByUserIdQueryHandler : IRequestHandler<GetPostConnectionsByUserQuery, IEnumerable<PostConnection>>
+    public class GetPostConnectionsByUserHandler : IRequestHandler<GetPostConnectionsByUserQuery, IEnumerable<PostConnection>>
     {
         private readonly IUnitOfWork _unitOfWork;
-        public GetPostConnectionsByUserIdQueryHandler(IUnitOfWork unitOfWork)
+        public GetPostConnectionsByUserHandler(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
@@ -31,7 +38,7 @@ namespace Application.Queries.PostConnections
                 pc => pc.VolunteerPost.UserId == UserId :
                 pc => pc.NeedfulPost.UserId == UserId;
 
-            return await _unitOfWork.PostConnections.Get(filter: function, commaSeparatedIncludeProperties: "VolunteerPost,NeedfulPost");
+            return await _unitOfWork.PostConnections.GetAsync(filter: function, includeProperties: new string[] { "VolunteerPost", "NeedfulPost" });
         }
     }
 }

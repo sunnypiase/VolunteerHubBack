@@ -2,7 +2,7 @@
 {
     public class PostConnection
     {
-        public int Id { get; set; }
+        public int PostConnectionId { get; set; }
         public string Title { get; set; }
         public string Message { get; set; }
         public Post VolunteerPost { get; set; }

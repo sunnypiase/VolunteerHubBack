@@ -1,5 +1,4 @@
 ﻿using Application.Commands.Posts;
-using Application.Posts.Queries;
 using Application.Queries.Posts;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -24,9 +23,15 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(int id)
+        public async Task<IActionResult> GetById(int id)
         {
             return Ok(await _mediator.Send(new GetPostByIdQuery(id)));
+        }
+
+        [HttpGet("by-tags")]
+        public async Task<IActionResult> GetByTags([FromQuery] int[] tagIds)
+        {
+            return Ok(await _mediator.Send(new GetPostsByTagsQuery(tagIds)));
         }
 
         [HttpPost]

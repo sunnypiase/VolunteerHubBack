@@ -2,10 +2,7 @@
 using Application.Queries.Users;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Mvc;
-using System.Reflection;
-using System.Xml.Linq;
 
 namespace WebApi.Controllers
 {
@@ -71,15 +68,7 @@ namespace WebApi.Controllers
         [HttpGet("ifUserAuthorize")]
         public async Task<IActionResult> GetIfUserExist()
         {
-            if (HttpContext.Request.Cookies["token"] != null)
-            {
-                return Ok(true);
-            }
-            else
-            {
-                return Ok(false);
-            }
-
+            return Ok(HttpContext.Request.Cookies["token"] != null);
         }
 
     }

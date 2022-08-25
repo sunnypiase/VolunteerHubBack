@@ -1,9 +1,8 @@
-﻿using Domain.Abstractions;
-using Domain.Models;
+﻿using Domain.Models;
 
 namespace Application.Repositories.Abstractions
 {
-    public interface IPostConnectionRepository : IGenericRepository<PostConnection>
+    public interface IPostConnectionRepository : IGenericRepository<PostConnection, int>
     {
     }
 }

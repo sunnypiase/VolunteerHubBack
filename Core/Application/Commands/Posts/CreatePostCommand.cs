@@ -1,5 +1,5 @@
-﻿using Application.Services;
-using Application.UnitOfWorks;
+﻿using Application.Repositories;
+using Application.Services;
 using Domain.Enums;
 using Domain.Exceptions;
 using Domain.Models;
@@ -11,13 +11,21 @@ namespace Application.Commands.Posts
     public record CreatePostCommand : IRequest<Post>
     {
         // can there be a post without an image or tags?
-        public string Title { get; set; }
-        public string Description { get; set; }
-        public int UserId { get; set; }
-        public ICollection<int> TagIds { get; set; }
+        public string Title { get; init; }
+        public string Description { get; init; }
+        public int UserId { get; init; }
+        public ICollection<int> TagIds { get; init; }
 
         [JsonConverter(typeof(ByteArrayConverter))]
-        public byte[] Image { get; set; }
+        public byte[] Image { get; init; }
+        public CreatePostCommand(string title, string description, int userId, ICollection<int> tagIds, byte[] image)
+        {
+            Title = title;
+            Description = description;
+            UserId = userId;
+            TagIds = tagIds;
+            Image = image;
+        }
     }
 
     public class CreatePostHandler : IRequestHandler<CreatePostCommand, Post>
@@ -30,14 +38,14 @@ namespace Application.Commands.Posts
         }
         public async Task<Post> Handle(CreatePostCommand request, CancellationToken cancellationToken)
         {
-            var postOwner = await _unitOfWork.Users.GetById(request.UserId);
+            var postOwner = await _unitOfWork.Users.GetByIdAsync(request.UserId);
 
             if (postOwner == null)
             {
                 throw new UserNotFoundException(request.UserId);
             }
 
-            var postType = postOwner.Role == UserRole.Needful ? PostType.REQUEST : PostType.PROPOSITION;
+            var postType = postOwner.Role == UserRole.Needful ? PostType.Request : PostType.Proposition;
 
             var post = new Post()
             {
@@ -50,8 +58,8 @@ namespace Application.Commands.Posts
                 PostType = postType
             };
 
-            await _unitOfWork.Posts.Insert(post);
-            await _unitOfWork.SaveChanges();
+            await _unitOfWork.Posts.InsertAsync(post);
+            await _unitOfWork.SaveChangesAsync();
             return post;
         }
 
@@ -60,7 +68,7 @@ namespace Application.Commands.Posts
             var tags = new List<Tag>();
             foreach (var tagId in tagIds)
             {
-                var tag = await _unitOfWork.Tags.GetById(tagId);
+                var tag = await _unitOfWork.Tags.GetByIdAsync(tagId);
                 if (tag != null)
                 {
                     tags.Add(tag);
