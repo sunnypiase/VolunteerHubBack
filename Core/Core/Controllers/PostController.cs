@@ -1,5 +1,4 @@
 ﻿using Application.Commands.Posts;
-using Application.Posts.Queries;
 using Application.Queries.Posts;
 using Application.Queries.Tags;
 using Domain.Models;
@@ -26,29 +25,20 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(int id)
+        public async Task<IActionResult> GetById(int id)
         {
             return Ok(await _mediator.Send(new GetPostByIdQuery(id)));
         }
 
-        [HttpGet("tags={ids}")]
-        public async Task<IActionResult> Get([FromRoute] string ids)
+        [HttpGet("by-tags")]
+        public async Task<IActionResult> GetByTags([FromQuery(Name = "ids")] string tagIds)
         {
-            var tags = await GetTagsByIdsAsync(ids);
-            return Ok(await _mediator.Send(new GetPostsByTagsQuery(tags)));
+            return Ok(await _mediator.Send(
+                new GetPostsByTagsQuery(tagIds
+                .Split(",", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .Where(tag => int.TryParse(tag, out _))
+                .Select(tag => int.Parse(tag)))));
         }
-
-        private async Task<IEnumerable<Tag>> GetTagsByIdsAsync(string idsString)
-        {
-            List<int> idsInt = idsString.Split(",").Select(x => Int32.Parse(x)).ToList();
-            List<Tag> tags = new();
-            foreach (int id in idsInt)
-            {
-                tags.Add(await _mediator.Send(new GetTagByIdQuery(id)));
-            }
-            return tags;
-        }
-
 
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] CreatePostCommand post)

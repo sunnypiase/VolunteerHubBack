@@ -1,5 +1,5 @@
-﻿using Application.Services;
-using Application.UnitOfWorks;
+﻿using Application.Repositories;
+using Application.Services;
 using Domain.Attributes;
 using Domain.Enums;
 using Domain.Exceptions;
@@ -13,40 +13,51 @@ namespace Application.Commands.Users
     {
         [Required(ErrorMessage = "Name is reqired")]
         [StringLength(50, ErrorMessage = "Name must be between 2 and 50 characters", MinimumLength = 2)]
-        public string Name { get; set; }
+        public string Name { get; init; }
         [Required(ErrorMessage = "Surname is reqired")]
         [StringLength(50, ErrorMessage = "Surname must be between 2 and 50 characters", MinimumLength = 2)]
-        public string Surname { get; set; }
+        public string Surname { get; init; }
         [Required]
         [EmailAddress]
-        public string Email { get; set; }
+        public string Email { get; init; }
         [Required(ErrorMessage = "Password is reqired")]
         [StringLength(20, ErrorMessage = "Password must be between 8 and 20 characters", MinimumLength = 8)]
-        public string Password { get; set; }
+        public string Password { get; init; }
         [Required(ErrorMessage = "Password is reqired")]
         [StringLength(20, ErrorMessage = "Password must be between 8 and 20 characters", MinimumLength = 8)]
         [Compare("Password", ErrorMessage = "Passwords do not match")]
-        public string RepeatPassword { get; set; }
+        public string RepeatPassword { get; init; }
         [Required]
         [Phone]
-        public string PhoneNumber { get; set; }
-        public string Address { get; set; }
+        public string PhoneNumber { get; init; }
+        public string Address { get; init; }
         [Required]
         [StringToEnum(typeof(UserRole), ErrorMessage = "Role is not valid")]
-        public string Role { get; set; }
+        public string Role { get; init; }
+        public RegisterUserCommand(string name, string surname, string email, string password, string repeatPassword, string phoneNumber, string address, string role)
+        {
+            Name = name;
+            Surname = surname;
+            Email = email;
+            Password = password;
+            RepeatPassword = repeatPassword;
+            PhoneNumber = phoneNumber;
+            Address = address;
+            Role = role;
+        }
     }
-    public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand>
+    public class RegisterUserHandler : IRequestHandler<RegisterUserCommand>
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly HashingService _hashingService;
-        public RegisterUserCommandHandler(IUnitOfWork unitOfWork, HashingService hashingService)
+        private readonly IHashingService _hashingService;
+        public RegisterUserHandler(IUnitOfWork unitOfWork, IHashingService hashingService)
         {
             _unitOfWork = unitOfWork;
             _hashingService = hashingService;
         }
         public async Task<Unit> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
         {
-            var existingUser = (await _unitOfWork.Users.Get(user => user.Email == request.Email)).FirstOrDefault();
+            var existingUser = (await _unitOfWork.Users.GetAsync(user => user.Email == request.Email)).FirstOrDefault();
 
             if (existingUser != null)
             {
@@ -64,8 +75,8 @@ namespace Application.Commands.Users
                 Role = Enum.Parse<UserRole>(request.Role)
             };
 
-            await _unitOfWork.Users.Insert(newUser);
-            await _unitOfWork.SaveChanges();
+            await _unitOfWork.Users.InsertAsync(newUser);
+            await _unitOfWork.SaveChangesAsync();
             return default;
         }
     }

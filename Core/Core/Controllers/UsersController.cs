@@ -2,10 +2,7 @@
 using Application.Queries.Users;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Mvc;
-using System.Reflection;
-using System.Xml.Linq;
 
 namespace WebApi.Controllers
 {
@@ -41,7 +38,7 @@ namespace WebApi.Controllers
 
         [Authorize]
         [HttpPost("logout")]
-        public async Task<IActionResult> LogOut()
+        public IActionResult LogOut()
         {
             HttpContext.Response.Cookies.Delete("token");
             return Ok("Successfully logged out");
@@ -49,9 +46,9 @@ namespace WebApi.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> GetUsers()
+        public async Task<IActionResult> GetUsers(CancellationToken token)
         {
-            return Ok(await _mediator.Send(new GetUsersQuery()));
+            return Ok(await _mediator.Send(new GetUsersQuery(), token));
         }
 
         [HttpGet("{id:int}")]
@@ -69,17 +66,9 @@ namespace WebApi.Controllers
         }
         [AllowAnonymous]
         [HttpGet("ifUserAuthorize")]
-        public async Task<IActionResult> GetIfUserExist()
+        public IActionResult GetIfUserExist()
         {
-            if (HttpContext.Request.Cookies["token"] != null)
-            {
-                return Ok(true);
-            }
-            else
-            {
-                return Ok(false);
-            }
-
+            return Ok(HttpContext.Request.Cookies["token"] != null);
         }
 
     }

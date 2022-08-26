@@ -1,16 +1,16 @@
 ﻿using System.Linq.Expressions;
 
-namespace Domain.Abstractions
+namespace Application.Repositories.Abstractions
 {
-    public interface IGenericRepository<TEntity> where TEntity : class
+    public interface IGenericRepository<TEntity, IdType> where TEntity : class
     {
-        public Task<IEnumerable<TEntity>> Get(
-            Expression<Func<TEntity, bool>> filter = null,
-            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
-            string commaSeparatedIncludeProperties = "");
-        public Task<TEntity?> GetById<IdType>(IdType id);
-        public Task<bool> Insert(TEntity entity);
-        public Task<bool> Update(TEntity entityToUpdate);
-        public Task<bool> Delete<IdType>(IdType id);
+        public Task<IEnumerable<TEntity>> GetAsync(
+            Expression<Func<TEntity, bool>>? filter = null,
+            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
+            string[]? includeProperties = null);
+        public Task<TEntity?> GetByIdAsync(IdType id);
+        public Task<bool> InsertAsync(TEntity entity);
+        public Task<bool> UpdateAsync(TEntity entityToUpdate);
+        public Task<bool> DeleteAsync(IdType id);
     }
 }

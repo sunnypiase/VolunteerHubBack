@@ -1,11 +1,18 @@
-﻿using Application.UnitOfWorks;
+﻿using Application.Repositories;
 using Domain.Models;
 using MediatR;
 using System.Linq.Expressions;
 
 namespace Application.Queries.Posts
 {
-    public record GetPostsByTagsQuery(IEnumerable<Tag> Tags) : IRequest<IEnumerable<Post>>;
+    public record GetPostsByTagsQuery : IRequest<IEnumerable<Post>>
+    {
+        public IEnumerable<int> TagIds { get; init; }
+        public GetPostsByTagsQuery(IEnumerable<int> tagIds)
+        {
+            TagIds = tagIds;
+        }
+    }
 
     public class GetPostsByTagsHandler : IRequestHandler<GetPostsByTagsQuery, IEnumerable<Post>>
     {
@@ -17,11 +24,9 @@ namespace Application.Queries.Posts
         }
         public async Task<IEnumerable<Post>> Handle(GetPostsByTagsQuery request, CancellationToken cancellationToken)
         {
-            return await _unitOfWork.Posts.Get(
-                filter: post => !post.Tags.Except(request.Tags).Any(), 
-                commaSeparatedIncludeProperties: "Tags"
-                );
-            //return await _unitOfWork.Posts.Get(post => request.Tags.All(tag => post.Tags.Contains(tag)));
+            return await _unitOfWork.Posts.GetAsync(
+                filter: post => post.Tags.Where(tag => request.TagIds.Contains(tag.TagId)).Any(),
+                includeProperties: new string[] { "User", "Tags" });
         }
     }
 }

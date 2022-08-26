@@ -1,5 +1,4 @@
 ﻿using Domain.Enums;
-using System.Text.Json.Serialization;
 
 namespace Domain.Models
 {

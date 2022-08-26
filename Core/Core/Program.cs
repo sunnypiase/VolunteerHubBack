@@ -1,12 +1,12 @@
+using Application;
+using Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.IdentityModel.Tokens;
-using WebApi.Middlewares;
 using Newtonsoft.Json;
-using System.Text;
-using Infrastructure;
-using Application;
 using Serilog;
+using System.Text;
+using WebApi.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 

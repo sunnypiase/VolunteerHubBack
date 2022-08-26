@@ -1,15 +1,15 @@
-﻿using Domain.Abstractions;
+﻿using Application.Repositories.Abstractions;
 using Domain.Models;
 
 namespace Infrastructure.Repositories
 {
-    public class TagRepository : SqlGenericRepository<Tag>, ITagRepository
+    public class TagRepository : SqlGenericRepository<Tag, int>, ITagRepository
     {
         public TagRepository(ApplicationContext applicationContext) : base(applicationContext)
         {
         }
 
-        public override async Task<bool> Update(Tag entityToUpdate)
+        public override async Task<bool> UpdateAsync(Tag entityToUpdate)
         {
             Tag? tagToUpdate = await _entity.FindAsync(entityToUpdate.TagId);
 

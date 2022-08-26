@@ -54,15 +54,23 @@ namespace Infrastructure
                 });
 
             modelBuilder.Entity<PostConnection>()
-            .HasOne(p => p.VolunteerPost)
-            .WithMany()
-            .OnDelete(DeleteBehavior.NoAction);
+                .HasOne(p => p.VolunteerPost)
+                .WithMany()
+                .OnDelete(DeleteBehavior.NoAction);
 
 
             modelBuilder.Entity<PostConnection>()
-            .HasOne(p => p.NeedfulPost)
-            .WithMany()
-            .OnDelete(DeleteBehavior.NoAction);
+                .HasOne(p => p.NeedfulPost)
+                .WithMany()
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<User>()
+                .HasIndex(user => user.Email)
+                .IsUnique();
+
+            modelBuilder.Entity<Tag>()
+                .HasIndex(tag => tag.Name)
+                .IsUnique();
         }
     }
 }

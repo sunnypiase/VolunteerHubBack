@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20220821102721_azureConnection")]
-    partial class azureConnection
+    [Migration("20220826103344_Unique-constraints-added")]
+    partial class Uniqueconstraintsadded
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -59,11 +59,11 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Models.PostConnection", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("PostConnectionId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PostConnectionId"), 1L, 1);
 
                     b.Property<string>("Message")
                         .IsRequired()
@@ -79,7 +79,7 @@ namespace Infrastructure.Migrations
                     b.Property<int>("VolunteerPostPostId")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.HasKey("PostConnectionId");
 
                     b.HasIndex("NeedfulPostPostId");
 
@@ -102,6 +102,9 @@ namespace Infrastructure.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.HasKey("TagId");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("Tags");
 
@@ -132,7 +135,7 @@ namespace Infrastructure.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -154,6 +157,9 @@ namespace Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("UserId");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
 
                     b.ToTable("Users");
 

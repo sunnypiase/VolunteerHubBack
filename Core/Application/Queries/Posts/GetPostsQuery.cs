@@ -1,10 +1,10 @@
-﻿using Application.UnitOfWorks;
+﻿using Application.Repositories;
 using Domain.Models;
 using MediatR;
 
-namespace Application.Posts.Queries
+namespace Application.Queries.Posts
 {
-    public record GetPostsQuery() : IRequest<IEnumerable<Post>>;
+    public record GetPostsQuery : IRequest<IEnumerable<Post>>;
 
     public class GetPostsHandler : IRequestHandler<GetPostsQuery, IEnumerable<Post>>
     {
@@ -16,7 +16,7 @@ namespace Application.Posts.Queries
         }
         public async Task<IEnumerable<Post>> Handle(GetPostsQuery request, CancellationToken cancellationToken)
         {
-            return await _unitOfWork.Posts.Get(commaSeparatedIncludeProperties: "User,Tags");
+            return await _unitOfWork.Posts.GetAsync(includeProperties: new string[] { "User", "Tags" });
         }
     }
 }

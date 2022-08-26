@@ -1,9 +1,10 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Application.Services;
+using Microsoft.Extensions.Configuration;
 using System.Security.Cryptography;
 
-namespace Application.Services
+namespace Infrastructure.Services
 {
-    public class HashingService
+    public class HashingService : IHashingService
     {
         private readonly IConfiguration _configuration;
         public HashingService(IConfiguration configuration)

@@ -1,8 +1,8 @@
 ﻿using Domain.Models;
 
-namespace Domain.Abstractions
+namespace Application.Repositories.Abstractions
 {
-    public interface ITagRepository : IGenericRepository<Tag>
+    public interface ITagRepository : IGenericRepository<Tag, int>
     {
     }
 }

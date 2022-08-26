@@ -1,17 +1,16 @@
-﻿using Domain.Abstractions;
+﻿using Application.Repositories.Abstractions;
 using Domain.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
 
 namespace Infrastructure.Repositories
 {
-    public class PostRepository : SqlGenericRepository<Post>, IPostRepository
+    public class PostRepository : SqlGenericRepository<Post, int>, IPostRepository
     {
         public PostRepository(ApplicationContext applicationContext) : base(applicationContext)
         {
         }
 
-        public override async Task<bool> Update(Post entityToUpdate)
+        public override async Task<bool> UpdateAsync(Post entityToUpdate)
         {
             Post? postToUpdate = await _entity.FindAsync(entityToUpdate.UserId);
 
@@ -27,13 +26,9 @@ namespace Infrastructure.Repositories
             }
             return false;
         }
-        public override async Task<Post?> GetById<IdType>(IdType id)
+        public override async Task<Post?> GetByIdAsync(int id)
         {
-            if (id == null)
-            {
-                return null;
-            }
-            return await _entity.Include("User").Include(post => post.Tags).FirstOrDefaultAsync(post => post.PostId == int.Parse(id.ToString()));
+            return await _entity.Include("User").Include(post => post.Tags).FirstOrDefaultAsync(post => post.PostId == id);
         }
     }
 }

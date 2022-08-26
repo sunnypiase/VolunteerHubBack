@@ -1,11 +1,18 @@
-﻿using Application.UnitOfWorks;
+﻿using Application.Repositories;
 using Domain.Exceptions;
 using Domain.Models;
 using MediatR;
 
 namespace Application.Queries.Tags
 {
-    public record GetTagByIdQuery(int TagId) : IRequest<Tag>;
+    public record GetTagByIdQuery : IRequest<Tag>
+    {
+        public int TagId { get; init; }
+        public GetTagByIdQuery(int tagId)
+        {
+            TagId = tagId;
+        }
+    }
 
     public class GetTagByIdHandler : IRequestHandler<GetTagByIdQuery, Tag>
     {
@@ -16,14 +23,7 @@ namespace Application.Queries.Tags
         }
         public async Task<Tag> Handle(GetTagByIdQuery request, CancellationToken cancellationToken)
         {
-            var result = await _unitOfWork.Tags.GetById(request.TagId);
-
-            if(result == null)
-            {
-                throw new TagNotFoundException(request.TagId);
-            }
-
-            return result;
+            return await _unitOfWork.Tags.GetByIdAsync(request.TagId) ?? throw new TagNotFoundException(request.TagId);
         }
     }
 }
