@@ -30,8 +30,8 @@ namespace Application.Commands.Users
     {
         private readonly IConfiguration _configuration;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly HashingService _hashingService;
-        public LoginUserHandler(IUnitOfWork unitOfWork, HashingService hashingService, IConfiguration configuration)
+        private readonly IHashingService _hashingService;
+        public LoginUserHandler(IUnitOfWork unitOfWork, IHashingService hashingService, IConfiguration configuration)
         {
             _unitOfWork = unitOfWork;
             _hashingService = hashingService;

@@ -29,9 +29,13 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("by-tags")]
-        public async Task<IActionResult> GetByTags([FromQuery] int[] tagIds)
+        public async Task<IActionResult> GetByTags([FromQuery(Name = "ids")] string tagIds)
         {
-            return Ok(await _mediator.Send(new GetPostsByTagsQuery(tagIds)));
+            return Ok(await _mediator.Send(
+                new GetPostsByTagsQuery(tagIds
+                .Split(",", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .Where(tag => int.TryParse(tag, out _))
+                .Select(tag => int.Parse(tag)))));
         }
 
         [HttpPost]

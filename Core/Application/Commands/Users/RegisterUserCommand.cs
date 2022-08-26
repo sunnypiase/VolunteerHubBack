@@ -49,8 +49,8 @@ namespace Application.Commands.Users
     public class RegisterUserHandler : IRequestHandler<RegisterUserCommand>
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly HashingService _hashingService;
-        public RegisterUserHandler(IUnitOfWork unitOfWork, HashingService hashingService)
+        private readonly IHashingService _hashingService;
+        public RegisterUserHandler(IUnitOfWork unitOfWork, IHashingService hashingService)
         {
             _unitOfWork = unitOfWork;
             _hashingService = hashingService;

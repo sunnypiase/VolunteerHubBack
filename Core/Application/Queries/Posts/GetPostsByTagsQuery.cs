@@ -23,17 +23,9 @@ namespace Application.Queries.Posts
         }
         public async Task<IEnumerable<Post>> Handle(GetPostsByTagsQuery request, CancellationToken cancellationToken)
         {
-            var suitablePosts = new List<Post>();
-            foreach (var tagId in request.TagIds)
-            {
-                var result = (await _unitOfWork.Tags.GetAsync(tag => tag.TagId == tagId, includeProperties: new string[] { "Posts.User" })).FirstOrDefault();
-                if (result != null)
-                {
-                    suitablePosts.AddRange(result.Posts);
-                }
-            }
-            return suitablePosts.DistinctBy(post => post.PostId);
-            /*return await _unitOfWork.Posts.GetAsync(post => post.Tags.IntersectBy(request.TagIds, tag => tag.TagId).Any());*/
+            return await _unitOfWork.Posts.GetAsync(
+                filter: post => post.Tags.Where(tag => request.TagIds.Contains(tag.TagId)).Any(),
+                includeProperties: new string[] { "User", "Tags" });
         }
     }
 }
