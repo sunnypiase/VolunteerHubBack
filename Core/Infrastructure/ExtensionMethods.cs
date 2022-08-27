@@ -2,7 +2,6 @@
 using Application.Repositories.Abstractions;
 using Application.Services;
 using Azure.Storage.Blobs;
-using Azure.Storage.Blobs.Models;
 using Infrastructure.Repositories;
 using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
@@ -29,7 +28,7 @@ namespace Infrastructure
             services.AddTransient<IPostRepository, PostRepository>();
             services.AddTransient<IPostConnectionRepository, PostConnectionRepository>();
             services.AddTransient<IUnitOfWork, UnitOfWork>();
-            
+
         }
     }
 }

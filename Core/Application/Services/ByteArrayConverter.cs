@@ -15,7 +15,7 @@ namespace Application.Services
         {
             writer.WriteStartArray();
 
-            foreach (var val in value)
+            foreach (byte val in value)
             {
                 writer.WriteNumberValue(val);
             }

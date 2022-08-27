@@ -21,7 +21,7 @@ namespace WebApi.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginUserCommand loginUserCommand)
         {
-            var token = await _mediator.Send(loginUserCommand);
+            string? token = await _mediator.Send(loginUserCommand);
             HttpContext.Response.Cookies.Append("token", token, new CookieOptions
             {
                 MaxAge = TimeSpan.FromDays(1)
@@ -63,7 +63,7 @@ namespace WebApi.Controllers
         [Authorize]
         public async Task<IActionResult> GetUserByToken()
         {
-            var userId = int.Parse(new JwtSecurityTokenHandler()
+            int userId = int.Parse(new JwtSecurityTokenHandler()
                 .ReadJwtToken(Request.Cookies["token"])
                 .Claims
                 .First(claim => claim.Type == "Id")

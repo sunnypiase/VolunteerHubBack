@@ -13,7 +13,7 @@ namespace Infrastructure.Services
         }
         public byte[] GetHash(string password)
         {
-            using var hmac = new HMACSHA512(System.Text.Encoding.UTF8.GetBytes(_configuration["PasswordSalt"]));
+            using HMACSHA512? hmac = new HMACSHA512(System.Text.Encoding.UTF8.GetBytes(_configuration["PasswordSalt"]));
             return hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
         }
     }

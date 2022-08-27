@@ -18,7 +18,7 @@ namespace Domain.Attributes
         }
         public override bool IsValid(object? value)
         {
-            if (value != null && Enum.TryParse(EnumType, value.ToString(), out var _))
+            if (value != null && Enum.TryParse(EnumType, value.ToString(), out object? _))
             {
                 return true;
             }

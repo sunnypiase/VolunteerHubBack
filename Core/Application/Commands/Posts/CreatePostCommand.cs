@@ -38,16 +38,16 @@ namespace Application.Commands.Posts
         }
         public async Task<Post> Handle(CreatePostCommand request, CancellationToken cancellationToken)
         {
-            var postOwner = await _unitOfWork.Users.GetByIdAsync(request.UserId);
+            User? postOwner = await _unitOfWork.Users.GetByIdAsync(request.UserId);
 
             if (postOwner == null)
             {
                 throw new UserNotFoundException(request.UserId);
             }
 
-            var postType = postOwner.Role == UserRole.Needful ? PostType.Request : PostType.Proposition;
+            PostType postType = postOwner.Role == UserRole.Needful ? PostType.Request : PostType.Proposition;
 
-            var post = new Post()
+            Post? post = new Post()
             {
                 Title = request.Title,
                 Description = request.Description,
@@ -65,10 +65,10 @@ namespace Application.Commands.Posts
 
         private async Task<ICollection<Tag>> GetTagsByIdsAsync(ICollection<int> tagIds)
         {
-            var tags = new List<Tag>();
-            foreach (var tagId in tagIds)
+            List<Tag>? tags = new List<Tag>();
+            foreach (int tagId in tagIds)
             {
-                var tag = await _unitOfWork.Tags.GetByIdAsync(tagId);
+                Tag? tag = await _unitOfWork.Tags.GetByIdAsync(tagId);
                 if (tag != null)
                 {
                     tags.Add(tag);

@@ -1,5 +1,4 @@
 ﻿using Application.Repositories.Abstractions;
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -18,14 +17,14 @@ namespace WebApi.Controllers
         [HttpGet]
         public async Task<IActionResult> GetImageByName(string name)
         {
-            return Ok((await _blobRepository.GetImageByName(name)).Content);           
+            return Ok((await _blobRepository.GetImageByName(name)).Content);
 
         }
 
         [HttpPost]
         public async Task<IActionResult> UploadImage(string filePath, string name)
         {
-            return Ok((await _blobRepository.UploadImage(filePath,name)).Content);
+            return Ok((await _blobRepository.UploadImage(filePath, name)).Content);
         }
         [HttpDelete]
         public async Task<IActionResult> DeleteImage(string name)

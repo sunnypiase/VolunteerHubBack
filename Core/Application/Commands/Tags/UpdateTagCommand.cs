@@ -26,7 +26,7 @@ namespace Application.Commands.Tags
         }
         public async Task<Tag> Handle(UpdateTagCommand request, CancellationToken cancellationToken)
         {
-            var tag = new Tag()
+            Tag? tag = new Tag()
             {
                 TagId = request.TagId,
                 Name = request.Name
