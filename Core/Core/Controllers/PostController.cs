@@ -1,7 +1,5 @@
 ﻿using Application.Commands.Posts;
 using Application.Queries.Posts;
-using Application.Queries.Tags;
-using Domain.Models;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

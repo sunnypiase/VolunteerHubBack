@@ -1,7 +1,6 @@
 ﻿using Application.Repositories;
 using Domain.Models;
 using MediatR;
-using System.Linq.Expressions;
 
 namespace Application.Queries.Posts
 {

@@ -3,6 +3,7 @@ using Application.Queries.Users;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace WebApi.Controllers
 {
@@ -56,6 +57,19 @@ namespace WebApi.Controllers
         public async Task<IActionResult> GetUser(int id)
         {
             return Ok(await _mediator.Send(new GetUserByIdQuery(id)));
+        }
+
+        [HttpGet("by-token")]
+        [Authorize]
+        public async Task<IActionResult> GetUserByToken()
+        {
+            var userId = int.Parse(new JwtSecurityTokenHandler()
+                .ReadJwtToken(Request.Cookies["token"])
+                .Claims
+                .First(claim => claim.Type == "Id")
+                .Value);
+
+            return Ok(await _mediator.Send(new GetUserByIdQuery(userId)));
         }
 
         [HttpGet("{email}")]

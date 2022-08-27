@@ -1,5 +1,7 @@
 ﻿using Application.Repositories.Abstractions;
+using Domain.Exceptions;
 using Domain.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories
 {
@@ -24,6 +26,13 @@ namespace Infrastructure.Repositories
                 return true;
             }
             return false;
+        }
+
+        public override async Task<User?> GetByIdAsync(int id)
+        {
+            return await _entity.Include(user => user.Posts)
+                .ThenInclude(post => post.Tags)
+                .FirstOrDefaultAsync(user => user.UserId == id) ?? throw new UserNotFoundException(id);
         }
     }
 }

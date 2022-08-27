@@ -54,8 +54,7 @@ namespace Application.Commands.Posts
                 UserId = request.UserId,
                 User = postOwner,
                 Tags = await GetTagsByIdsAsync(request.TagIds),
-                //Image = request.Image,
-                Image = new byte[] {1,2,3,4}, // TODO - remove this
+                Image = request.Image,
                 PostType = postType
             };
 
