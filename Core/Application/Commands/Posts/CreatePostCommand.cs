@@ -14,14 +14,14 @@ namespace Application.Commands.Posts
         public string Description { get; init; }
         public int UserId { get; init; }
         public ICollection<int> TagIds { get; init; }
-        public CreateImageCommand CreateImageCommand { get; init; }
+        public string ImagePath { get; init; }
         public CreatePostCommand(string title, string description, int userId, ICollection<int> tagIds, string imagePath)
         {
             Title = title;
             Description = description;
             UserId = userId;
             TagIds = tagIds;
-            CreateImageCommand = new CreateImageCommand(imagePath);
+            ImagePath = imagePath;
         }
     }
 
@@ -53,7 +53,7 @@ namespace Application.Commands.Posts
                 UserId = request.UserId,
                 User = postOwner,
                 Tags = await GetTagsByIdsAsync(request.TagIds),
-                PostImage = await _mediator.Send(request.CreateImageCommand, cancellationToken),
+                PostImage = await _mediator.Send(new CreateImageCommand(request.ImagePath), cancellationToken),
                 PostType = postType
             };
 
