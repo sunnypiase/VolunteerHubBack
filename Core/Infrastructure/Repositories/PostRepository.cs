@@ -28,7 +28,10 @@ namespace Infrastructure.Repositories
         }
         public override async Task<Post?> GetByIdAsync(int id)
         {
-            return await _entity.Include("User").Include(post => post.Tags).FirstOrDefaultAsync(post => post.PostId == id);
+            return await _entity.Include("User")
+                                .Include(post => post.Tags)
+                                .Include(post => post.PostImage)
+                                .FirstOrDefaultAsync(post => post.PostId == id);
         }
     }
 }
