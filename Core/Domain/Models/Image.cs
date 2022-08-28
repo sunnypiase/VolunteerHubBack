@@ -7,7 +7,7 @@
 
         public override string? ToString()
         {
-            return ImageId + '.' + Format;
+            return $"{ImageId}.{Format}";
         }
     }
 }
