@@ -57,14 +57,14 @@ namespace Application.Commands.Users
         }
         public async Task<Unit> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
         {
-            var existingUser = (await _unitOfWork.Users.GetAsync(user => user.Email == request.Email)).FirstOrDefault();
+            User? existingUser = (await _unitOfWork.Users.GetAsync(user => user.Email == request.Email)).FirstOrDefault();
 
             if (existingUser != null)
             {
                 throw new EmailTakenByOtherUserException(request.Email);
             }
 
-            var newUser = new User()
+            User? newUser = new User()
             {
                 Name = request.Name,
                 Surname = request.Surname,

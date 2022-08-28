@@ -31,7 +31,7 @@ namespace Application.Commands.PostConnections
         }
         public async Task<PostConnection> Handle(CreatePostConnectionCommand request, CancellationToken cancellationToken)
         {
-            var postConnection = new PostConnection()
+            PostConnection? postConnection = new PostConnection()
             {
                 Title = request.Title,
                 Message = request.Message,
@@ -45,7 +45,7 @@ namespace Application.Commands.PostConnections
         }
         private async Task<Post> PostValidationAsync(int id, PostType expectedType)
         {
-            var post = await _unitOfWork.Posts.GetByIdAsync(id);
+            Post? post = await _unitOfWork.Posts.GetByIdAsync(id);
 
             if (post == null)
             {

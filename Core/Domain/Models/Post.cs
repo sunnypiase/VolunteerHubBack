@@ -7,7 +7,8 @@ namespace Domain.Models
         public int PostId { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
-        public byte[] Image { get; set; }
+        public int PostImageId { get; set; }
+        public Image PostImage { get; set; }
         public int UserId { get; set; }
         public User User { get; set; }
         public PostType PostType { get; set; }

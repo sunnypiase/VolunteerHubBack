@@ -39,8 +39,8 @@ namespace Application.Commands.Users
         }
         public async Task<string> Handle(LoginUserCommand request, CancellationToken cancellationToken)
         {
-            var passwordHash = _hashingService.GetHash(request.Password);
-            var user = (await _unitOfWork.Users.GetAsync(user => user.Email == request.Login && user.Password == passwordHash)).FirstOrDefault();
+            byte[]? passwordHash = _hashingService.GetHash(request.Password);
+            User? user = (await _unitOfWork.Users.GetAsync(user => user.Email == request.Login && user.Password == passwordHash)).FirstOrDefault();
 
             if (user == null)
             {
@@ -51,17 +51,17 @@ namespace Application.Commands.Users
         }
         private string GenerateJwtToken(User user)
         {
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Key"]));
-            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+            SymmetricSecurityKey? securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Key"]));
+            SigningCredentials? credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-            var claims = new List<Claim>
+            List<Claim>? claims = new List<Claim>
             {
                 new Claim("Id", user.UserId.ToString()),
                 new Claim(ClaimTypes.Email, user.Email),
                 new Claim(ClaimTypes.Role, user.Role.ToString())
             };
 
-            var token = new JwtSecurityToken(
+            JwtSecurityToken? token = new JwtSecurityToken(
                 claims: claims,
                 expires: DateTime.Now.AddDays(1),
                 signingCredentials: credentials);

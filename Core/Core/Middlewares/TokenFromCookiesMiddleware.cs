@@ -15,7 +15,7 @@
             context.Response.Headers.Add("X-Xss-Protection", "1");
             context.Response.Headers.Add("X-Frame-Options", "DENY");
 
-            var token = context.Request.Cookies["token"];
+            string? token = context.Request.Cookies["token"];
 
             if (!string.IsNullOrEmpty(token))
             {

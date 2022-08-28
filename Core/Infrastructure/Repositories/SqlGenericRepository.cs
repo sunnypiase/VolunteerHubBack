@@ -22,7 +22,7 @@ namespace Infrastructure.Repositories
 
             if (includeProperties != null)
             {
-                foreach (var includeProperty in includeProperties)
+                foreach (string? includeProperty in includeProperties)
                 {
                     query = query.Include(includeProperty);
                 }

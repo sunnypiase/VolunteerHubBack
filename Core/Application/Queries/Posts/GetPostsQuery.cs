@@ -16,7 +16,7 @@ namespace Application.Queries.Posts
         }
         public async Task<IEnumerable<Post>> Handle(GetPostsQuery request, CancellationToken cancellationToken)
         {
-            return await _unitOfWork.Posts.GetAsync(includeProperties: new string[] { "User", "Tags" });
+            return await _unitOfWork.Posts.GetAsync(includeProperties: new string[] { "User", "Tags", "PostImage" });
         }
     }
 }

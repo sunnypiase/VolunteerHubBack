@@ -1,10 +1,9 @@
-﻿using Application.Repositories;
-using Application.Services;
+﻿using Application.Commands.Images;
+using Application.Repositories;
 using Domain.Enums;
 using Domain.Exceptions;
 using Domain.Models;
 using MediatR;
-using System.Text.Json.Serialization;
 
 namespace Application.Commands.Posts
 {
@@ -15,46 +14,46 @@ namespace Application.Commands.Posts
         public string Description { get; init; }
         public int UserId { get; init; }
         public ICollection<int> TagIds { get; init; }
-
-        [JsonConverter(typeof(ByteArrayConverter))]
-        public byte[] Image { get; init; }
-        public CreatePostCommand(string title, string description, int userId, ICollection<int> tagIds, byte[] image)
+        public CreateImageCommand CreateImageCommand { get; init; }
+        public CreatePostCommand(string title, string description, int userId, ICollection<int> tagIds, string imagePath)
         {
             Title = title;
             Description = description;
             UserId = userId;
             TagIds = tagIds;
-            Image = image;
+            CreateImageCommand = new CreateImageCommand(imagePath);
         }
     }
 
     public class CreatePostHandler : IRequestHandler<CreatePostCommand, Post>
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IMediator _mediator;
 
-        public CreatePostHandler(IUnitOfWork unitOfWork)
+        public CreatePostHandler(IUnitOfWork unitOfWork, IMediator mediator)
         {
             _unitOfWork = unitOfWork;
+            _mediator = mediator;
         }
         public async Task<Post> Handle(CreatePostCommand request, CancellationToken cancellationToken)
         {
-            var postOwner = await _unitOfWork.Users.GetByIdAsync(request.UserId);
+            User? postOwner = await _unitOfWork.Users.GetByIdAsync(request.UserId);
 
             if (postOwner == null)
             {
                 throw new UserNotFoundException(request.UserId);
             }
 
-            var postType = postOwner.Role == UserRole.Needful ? PostType.Request : PostType.Proposition;
+            PostType postType = postOwner.Role == UserRole.Needful ? PostType.Request : PostType.Proposition;
 
-            var post = new Post()
+            Post? post = new Post()
             {
                 Title = request.Title,
                 Description = request.Description,
                 UserId = request.UserId,
                 User = postOwner,
                 Tags = await GetTagsByIdsAsync(request.TagIds),
-                Image = request.Image,
+                PostImage = await _mediator.Send(request.CreateImageCommand, cancellationToken),
                 PostType = postType
             };
 
@@ -65,10 +64,10 @@ namespace Application.Commands.Posts
 
         private async Task<ICollection<Tag>> GetTagsByIdsAsync(ICollection<int> tagIds)
         {
-            var tags = new List<Tag>();
-            foreach (var tagId in tagIds)
+            List<Tag>? tags = new List<Tag>();
+            foreach (int tagId in tagIds)
             {
-                var tag = await _unitOfWork.Tags.GetByIdAsync(tagId);
+                Tag? tag = await _unitOfWork.Tags.GetByIdAsync(tagId);
                 if (tag != null)
                 {
                     tags.Add(tag);

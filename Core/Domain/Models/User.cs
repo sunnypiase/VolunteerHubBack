@@ -11,6 +11,8 @@ namespace Domain.Models
         public string Surname { get; set; }
         public string PhoneNumber { get; set; }
         public string Address { get; set; }
+        public int ProfileImageId { get; set; }
+        public Image ProfileImage { get; set; }
         public UserRole Role { get; set; }
         public ICollection<Post> Posts { get; set; }
     }

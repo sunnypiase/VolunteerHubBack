@@ -18,7 +18,7 @@ namespace Infrastructure.Repositories
             {
                 postToUpdate.Title = entityToUpdate.Title;
                 postToUpdate.Description = entityToUpdate.Description;
-                postToUpdate.Image = entityToUpdate.Image;
+                postToUpdate.PostImage = entityToUpdate.PostImage;
                 postToUpdate.UserId = entityToUpdate.UserId;
                 postToUpdate.User = entityToUpdate.User;
                 postToUpdate.Tags = entityToUpdate.Tags;

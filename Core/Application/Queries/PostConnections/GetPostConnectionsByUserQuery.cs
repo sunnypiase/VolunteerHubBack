@@ -25,11 +25,11 @@ namespace Application.Queries.PostConnections
         }
         public async Task<IEnumerable<PostConnection>> Handle(GetPostConnectionsByUserQuery request, CancellationToken cancellationToken)
         {
-            var UserId = int.Parse(request.Claims
+            int UserId = int.Parse(request.Claims
                 .First(claim => claim.Type == "Id")
                 .Value);
 
-            var UserRole = Enum.Parse<UserRole>(request.Claims
+            UserRole UserRole = Enum.Parse<UserRole>(request.Claims
                 .First(claim => claim.Type == ClaimTypes.Role)
                 .Value);
 
