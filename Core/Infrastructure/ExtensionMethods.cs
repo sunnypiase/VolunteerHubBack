@@ -27,6 +27,7 @@ namespace Infrastructure
             services.AddTransient<ITagRepository, TagRepository>();
             services.AddTransient<IPostRepository, PostRepository>();
             services.AddTransient<IPostConnectionRepository, PostConnectionRepository>();
+            services.AddTransient<IImageRepository, ImageRepository>();
             services.AddTransient<IUnitOfWork, UnitOfWork>();
 
         }

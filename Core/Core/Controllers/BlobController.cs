@@ -18,7 +18,6 @@ namespace WebApi.Controllers
         public async Task<IActionResult> GetImageByName(string name)
         {
             return Ok((await _blobRepository.GetImageByName(name)).Content);
-
         }
 
         [HttpPost]

@@ -8,6 +8,7 @@ namespace Application.Repositories
         public IUserRepository Users { get; }
         public IPostRepository Posts { get; }
         public IPostConnectionRepository PostConnections { get; }
+        public IImageRepository Images { get; }
         public Task SaveChangesAsync();
     }
 }
