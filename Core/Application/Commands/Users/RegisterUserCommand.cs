@@ -1,4 +1,5 @@
-﻿using Application.Repositories;
+﻿using Application.Commands.Images;
+using Application.Repositories;
 using Application.Services;
 using Domain.Attributes;
 using Domain.Enums;
@@ -27,6 +28,7 @@ namespace Application.Commands.Users
         [StringLength(20, ErrorMessage = "Password must be between 8 and 20 characters", MinimumLength = 8)]
         [Compare("Password", ErrorMessage = "Passwords do not match")]
         public string RepeatPassword { get; init; }
+        public string ProfileImagePath { get; init; }
         [Required]
         [Phone]
         public string PhoneNumber { get; init; }
@@ -34,13 +36,14 @@ namespace Application.Commands.Users
         [Required]
         [StringToEnum(typeof(UserRole), ErrorMessage = "Role is not valid")]
         public string Role { get; init; }
-        public RegisterUserCommand(string name, string surname, string email, string password, string repeatPassword, string phoneNumber, string address, string role)
+        public RegisterUserCommand(string name, string surname, string email, string password, string repeatPassword, string profileImagePath, string phoneNumber, string address, string role)
         {
             Name = name;
             Surname = surname;
             Email = email;
             Password = password;
             RepeatPassword = repeatPassword;
+            ProfileImagePath = profileImagePath;
             PhoneNumber = phoneNumber;
             Address = address;
             Role = role;
@@ -48,10 +51,12 @@ namespace Application.Commands.Users
     }
     public class RegisterUserHandler : IRequestHandler<RegisterUserCommand>
     {
+        private readonly IMediator _mediator;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IHashingService _hashingService;
-        public RegisterUserHandler(IUnitOfWork unitOfWork, IHashingService hashingService)
+        public RegisterUserHandler(IMediator mediator, IUnitOfWork unitOfWork, IHashingService hashingService)
         {
+            _mediator = mediator;
             _unitOfWork = unitOfWork;
             _hashingService = hashingService;
         }
@@ -70,6 +75,7 @@ namespace Application.Commands.Users
                 Surname = request.Surname,
                 Email = request.Email,
                 Password = _hashingService.GetHash(request.Password),
+                ProfileImage = await _mediator.Send(new CreateImageCommand(request.ProfileImagePath), cancellationToken),
                 PhoneNumber = request.PhoneNumber,
                 Address = request.Address,
                 Role = Enum.Parse<UserRole>(request.Role)
