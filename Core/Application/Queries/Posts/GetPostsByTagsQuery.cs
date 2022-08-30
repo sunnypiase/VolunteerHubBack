@@ -25,7 +25,7 @@ namespace Application.Queries.Posts
         {
             return await _unitOfWork.Posts.GetAsync(
                 filter: post => post.Tags.Where(tag => request.TagIds.Contains(tag.TagId)).Any(),
-                includeProperties: new string[] { "User", "Tags", "PostImage" });
+                includeProperties: new string[] { "User.ProfileImage", "Tags", "PostImage" });
         }
     }
 }
