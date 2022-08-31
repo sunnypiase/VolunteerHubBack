@@ -21,9 +21,9 @@ namespace WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> UploadImage(string filePath, string name)
-        {
-            return Ok((await _blobRepository.UploadImage(filePath, name)).Content);
+        public async Task<IActionResult> UploadImage([FromForm] IFormFile fileToSend, string name)
+        {            
+            return Ok((await _blobRepository.UploadImage(fileToSend, name)).Content);
         }
         [HttpDelete]
         public async Task<IActionResult> DeleteImage(string name)

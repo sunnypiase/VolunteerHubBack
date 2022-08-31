@@ -2,16 +2,17 @@
 using Application.Repositories.Abstractions;
 using Domain.Models;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 
 namespace Application.Commands.Images
 {
     public class CreateImageCommand : IRequest<Image>
     {
-        public string ImagePath { get; init; }
+        public IFormFile ImageFile { get; init; }
 
-        public CreateImageCommand(string imagePath)
+        public CreateImageCommand(IFormFile imageFile)
         {
-            ImagePath = imagePath;
+            ImageFile = imageFile;
         }
     }
     public class CreateImageHandler : IRequestHandler<CreateImageCommand, Image>
@@ -27,14 +28,13 @@ namespace Application.Commands.Images
 
         public async Task<Image> Handle(CreateImageCommand request, CancellationToken cancellationToken)
         {
-            string? format = request.ImagePath[(request.ImagePath.LastIndexOf('.') + 1)..];
             Image image = new()
             {
-                Format = format,
+                Format = request.ImageFile.ContentType.Split('/')[1]
             };
             await _unitOfWork.Images.InsertAsync(image);
             await _unitOfWork.SaveChangesAsync();
-            await _blobRepository.UploadImage(request.ImagePath, image.ToString());
+            await _blobRepository.UploadImage(request.ImageFile, image.ToString());
             return image;
 
         }

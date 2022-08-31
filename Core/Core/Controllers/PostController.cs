@@ -39,8 +39,9 @@ namespace WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] CreatePostCommand post)
+        public async Task<IActionResult> Post([FromForm] CreatePostCommand post)
         {
+            Console.WriteLine(post.TagIds.Count); 
             return Ok(await _mediator.Send(post));
         }
     }

@@ -6,6 +6,7 @@ using Domain.Enums;
 using Domain.Exceptions;
 using Domain.Models;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
 
 namespace Application.Commands.Users
@@ -28,7 +29,7 @@ namespace Application.Commands.Users
         [StringLength(20, ErrorMessage = "Password must be between 8 and 20 characters", MinimumLength = 8)]
         [Compare("Password", ErrorMessage = "Passwords do not match")]
         public string RepeatPassword { get; init; }
-        public string ProfileImagePath { get; init; }
+        public IFormFile ProfileImageFile { get; init; }
         [Required]
         [Phone]
         public string PhoneNumber { get; init; }
@@ -36,14 +37,14 @@ namespace Application.Commands.Users
         [Required]
         [StringToEnum(typeof(UserRole), ErrorMessage = "Role is not valid")]
         public string Role { get; init; }
-        public RegisterUserCommand(string name, string surname, string email, string password, string repeatPassword, string profileImagePath, string phoneNumber, string address, string role)
+        public RegisterUserCommand(string name, string surname, string email, string password, string repeatPassword, IFormFile profileImageFile, string phoneNumber, string address, string role)
         {
             Name = name;
             Surname = surname;
             Email = email;
             Password = password;
             RepeatPassword = repeatPassword;
-            ProfileImagePath = profileImagePath;
+            ProfileImageFile = profileImageFile;
             PhoneNumber = phoneNumber;
             Address = address;
             Role = role;
@@ -75,7 +76,7 @@ namespace Application.Commands.Users
                 Surname = request.Surname,
                 Email = request.Email,
                 Password = _hashingService.GetHash(request.Password),
-                ProfileImage = await _mediator.Send(new CreateImageCommand(request.ProfileImagePath), cancellationToken),
+                ProfileImage = await _mediator.Send(new CreateImageCommand(request.ProfileImageFile), cancellationToken),
                 PhoneNumber = request.PhoneNumber,
                 Address = request.Address,
                 Role = Enum.Parse<UserRole>(request.Role)

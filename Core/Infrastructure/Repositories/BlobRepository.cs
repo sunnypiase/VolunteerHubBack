@@ -3,6 +3,7 @@ using Application.Repositories.Abstractions;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Infrastructure.Services;
+using Microsoft.AspNetCore.Http;
 
 namespace Infrastructure.Repositories
 {
@@ -33,16 +34,24 @@ namespace Infrastructure.Repositories
             return new BlobInfo(blobDownloadInfo.Value.Content, blobDownloadInfo.Value.ContentType);
         }
 
-        public async Task<IBlobInfo> UploadImage(string path, string name)
+        public async Task<IBlobInfo> UploadImage(IFormFile imageFile, string name)
         {
+            BinaryData binaryImage = null;
+            using (var imageStream = new MemoryStream())
+            {
+                imageFile.CopyTo(imageStream);
+
+                binaryImage = new BinaryData(imageStream.ToArray());
+            }
             BlobContainerClient? containerClient = _blobServiceClient.GetBlobContainerClient("images");
 
             BlobClient? blobClient = containerClient.GetBlobClient(name);
 
-            await blobClient.UploadAsync(path, new BlobHttpHeaders { ContentType = path.GetContentType() });
+            await blobClient.UploadAsync(binaryImage, new BlobUploadOptions() { HttpHeaders = new BlobHttpHeaders { ContentType = imageFile.ContentType } });
 
             Azure.Response<BlobDownloadInfo>? blobDownloadInfo = await blobClient.DownloadAsync();
             return new BlobInfo(blobDownloadInfo.Value.Content, blobDownloadInfo.Value.ContentType);
+
         }
     }
 }

@@ -4,25 +4,19 @@ using Domain.Enums;
 using Domain.Exceptions;
 using Domain.Models;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 
 namespace Application.Commands.Posts
 {
-    public record CreatePostCommand : IRequest<Post>
+    public class CreatePostCommand : IRequest<Post>
     {
         // can there be a post without an image or tags?
-        public string Title { get; init; }
-        public string Description { get; init; }
-        public int UserId { get; init; }
-        public ICollection<int> TagIds { get; init; }
-        public string ImagePath { get; init; }
-        public CreatePostCommand(string title, string description, int userId, ICollection<int> tagIds, string imagePath)
-        {
-            Title = title;
-            Description = description;
-            UserId = userId;
-            TagIds = tagIds;
-            ImagePath = imagePath;
-        }
+        public int UserId { get; set; }
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public ICollection<int> TagIds { get; set; }
+         public IFormFile ImageFile { get; set; }
+
     }
 
     public class CreatePostHandler : IRequestHandler<CreatePostCommand, Post>
@@ -53,7 +47,7 @@ namespace Application.Commands.Posts
                 UserId = request.UserId,
                 User = postOwner,
                 Tags = await GetTagsByIdsAsync(request.TagIds),
-                PostImage = await _mediator.Send(new CreateImageCommand(request.ImagePath), cancellationToken),
+                PostImage = await _mediator.Send(new CreateImageCommand(request.ImageFile), cancellationToken),
                 PostType = postType
             };
 
