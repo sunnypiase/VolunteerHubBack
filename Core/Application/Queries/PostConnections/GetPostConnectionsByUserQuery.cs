@@ -1,18 +1,18 @@
 ﻿using Application.Repositories;
+using Application.Services;
 using Domain.Enums;
 using Domain.Models;
 using MediatR;
 using System.Linq.Expressions;
-using System.Security.Claims;
 
 namespace Application.Queries.PostConnections
 {
     public record GetPostConnectionsByUserQuery : IRequest<IEnumerable<PostConnection>>
     {
-        public IEnumerable<Claim> Claims { get; init; }
-        public GetPostConnectionsByUserQuery(IEnumerable<Claim> claims)
+        public string? Token { get; init; }
+        public GetPostConnectionsByUserQuery(string? token)
         {
-            Claims = claims;
+            Token = token;
         }
     }
 
@@ -25,18 +25,12 @@ namespace Application.Queries.PostConnections
         }
         public async Task<IEnumerable<PostConnection>> Handle(GetPostConnectionsByUserQuery request, CancellationToken cancellationToken)
         {
-            int UserId = int.Parse(request.Claims
-                .First(claim => claim.Type == "Id")
-                .Value);
-
-            UserRole UserRole = Enum.Parse<UserRole>(request.Claims
-                .First(claim => claim.Type == ClaimTypes.Role)
-                .Value);
+            var userFromToken = new GetUserFromTokenService(request.Token);
 
             Expression<Func<PostConnection, bool>> function =
-                UserRole == UserRole.Volunteer ?
-                pc => pc.VolunteerPost.UserId == UserId :
-                pc => pc.NeedfulPost.UserId == UserId;
+                userFromToken.Role == UserRole.Volunteer ?
+                pc => pc.VolunteerPost.UserId == userFromToken.UserId :
+                pc => pc.NeedfulPost.UserId == userFromToken.UserId;
 
             return await _unitOfWork.PostConnections.GetAsync(filter: function, includeProperties: new string[] { "VolunteerPost", "NeedfulPost" });
         }
