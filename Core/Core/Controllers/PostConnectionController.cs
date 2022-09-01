@@ -4,6 +4,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
+using WebApi.Models;
 
 namespace WebApi.Controllers
 {
@@ -34,9 +35,10 @@ namespace WebApi.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> Post([FromBody] CreatePostConnectionCommand post)
+        public async Task<IActionResult> Post([FromBody] CreatePostConnectionRequestModel post)
         {
-            return Ok(await _mediator.Send(post));
+            return Ok(await _mediator.Send(new CreatePostConnectionCommand(post.Title, post.Message, post.VolunteerPostId,
+                post.NeedfulPostId, Request.Cookies["token"])));
         }
     }
 }
