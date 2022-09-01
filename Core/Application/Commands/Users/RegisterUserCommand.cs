@@ -11,44 +11,33 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Application.Commands.Users
 {
-    public record RegisterUserCommand : IRequest
+    public class RegisterUserCommand : IRequest
     {
         [Required(ErrorMessage = "Name is reqired")]
         [StringLength(50, ErrorMessage = "Name must be between 2 and 50 characters", MinimumLength = 2)]
-        public string Name { get; init; }
+        public string Name { get; set; }
         [Required(ErrorMessage = "Surname is reqired")]
         [StringLength(50, ErrorMessage = "Surname must be between 2 and 50 characters", MinimumLength = 2)]
-        public string Surname { get; init; }
+        public string Surname { get; set; }
         [Required]
         [EmailAddress]
-        public string Email { get; init; }
+        public string Email { get; set; }
         [Required(ErrorMessage = "Password is reqired")]
         [StringLength(20, ErrorMessage = "Password must be between 8 and 20 characters", MinimumLength = 8)]
-        public string Password { get; init; }
+        public string Password { get; set; }
         [Required(ErrorMessage = "Password is reqired")]
         [StringLength(20, ErrorMessage = "Password must be between 8 and 20 characters", MinimumLength = 8)]
         [Compare("Password", ErrorMessage = "Passwords do not match")]
-        public string RepeatPassword { get; init; }
-        public IFormFile ProfileImageFile { get; init; }
+        public string RepeatPassword { get; set; }
+        public IFormFile ProfileImageFile { get; set; }
         [Required]
         [Phone]
-        public string PhoneNumber { get; init; }
-        public string Address { get; init; }
+        public string PhoneNumber { get; set; }
+        public string Address { get; set; }
         [Required]
         [StringToEnum(typeof(UserRole), ErrorMessage = "Role is not valid")]
-        public string Role { get; init; }
-        public RegisterUserCommand(string name, string surname, string email, string password, string repeatPassword, IFormFile profileImageFile, string phoneNumber, string address, string role)
-        {
-            Name = name;
-            Surname = surname;
-            Email = email;
-            Password = password;
-            RepeatPassword = repeatPassword;
-            ProfileImageFile = profileImageFile;
-            PhoneNumber = phoneNumber;
-            Address = address;
-            Role = role;
-        }
+        public string Role { get; set; }
+
     }
     public class RegisterUserHandler : IRequestHandler<RegisterUserCommand>
     {
