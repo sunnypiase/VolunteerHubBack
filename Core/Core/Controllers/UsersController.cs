@@ -94,7 +94,7 @@ namespace WebApi.Controllers
 
         [HttpPut("image")]
         [Authorize]
-        public async Task<IActionResult> UpdateImage([FromBody] UpdateUserImageCommand userToUpdate)
+        public async Task<IActionResult> UpdateImage([FromForm] UpdateUserImageCommand userToUpdate)
         {
             return Ok(await _mediator.Send(userToUpdate));
         }

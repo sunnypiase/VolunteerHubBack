@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Application.Commands.Images
 {
-    public class CreateImageCommand : IRequest<Image>
+    public record CreateImageCommand : IRequest<Image>
     {
         public IFormFile ImageFile { get; init; }
 

@@ -1,5 +1,6 @@
 ﻿using Application.Commands.Images;
 using Application.Repositories;
+using Application.Repositories.Abstractions;
 using Application.Services;
 using Domain.Enums;
 using Domain.Exceptions;
@@ -19,25 +20,22 @@ namespace Application.Commands.Users
     {
         [Required]
         [EmailAddress]
-        public string Email { get; init; }
+        public string Email { get; set; }
         [Required]
-        public IFormFile ProfileImageFile { get; init; }
-
-        public UpdateUserImageCommand(string email, IFormFile profileImageFile)
-        {
-            Email = email;
-            ProfileImageFile = profileImageFile;
-        }
+        public IFormFile ProfileImageFile { get; set; }
     }
 
     public class UpdateUserImageHandler : IRequestHandler<UpdateUserImageCommand>
     {
         private readonly IMediator _mediator;
         private readonly IUnitOfWork _unitOfWork;
-        public UpdateUserImageHandler(IMediator mediator, IUnitOfWork unitOfWork)
+        private readonly IBlobRepository _blobRepository;
+
+        public UpdateUserImageHandler(IMediator mediator, IUnitOfWork unitOfWork, IBlobRepository blobRepository)
         {
             _mediator = mediator;
             _unitOfWork = unitOfWork;
+            _blobRepository = blobRepository;
         }
         public async Task<Unit> Handle(UpdateUserImageCommand request, CancellationToken cancellationToken)
         {
@@ -47,10 +45,11 @@ namespace Application.Commands.Users
             {
                 throw new UserNotFoundException(request.Email);
             }
+            userToUpdate.ProfileImage = new Image() { ImageId = userToUpdate.ProfileImageId, Format = request.ProfileImageFile.ContentType.Split('/')[1] };
 
-            userToUpdate.ProfileImage = await _mediator.Send(new CreateImageCommand(request.ProfileImageFile), cancellationToken);
 
-            await _unitOfWork.Users.UpdateAsync(userToUpdate);
+            await _blobRepository.UploadImage(request.ProfileImageFile, userToUpdate.ProfileImage.ToString());
+            await _unitOfWork.Images.UpdateAsync(userToUpdate.ProfileImage);
             await _unitOfWork.SaveChangesAsync();
             return default;
         }
