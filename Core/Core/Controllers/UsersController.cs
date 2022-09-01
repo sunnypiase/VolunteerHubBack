@@ -31,7 +31,7 @@ namespace WebApi.Controllers
 
         [AllowAnonymous]
         [HttpPost("register")]
-        public async Task<IActionResult> Register(RegisterUserCommand registerUserCommand)
+        public async Task<IActionResult> Register([FromForm]RegisterUserCommand registerUserCommand)
         {
             await _mediator.Send(registerUserCommand);
             return Ok("Successfully registered!");
