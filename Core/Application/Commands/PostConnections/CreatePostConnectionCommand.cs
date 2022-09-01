@@ -3,6 +3,7 @@ using Domain.Enums;
 using Domain.Exceptions;
 using Domain.Models;
 using MediatR;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace Application.Commands.PostConnections
 {
@@ -18,6 +19,7 @@ namespace Application.Commands.PostConnections
             Message = message;
             VolunteerPostId = volunteerPostId;
             NeedfulPostId = needfulPostId;
+
         }
     }
 
@@ -36,8 +38,14 @@ namespace Application.Commands.PostConnections
                 Title = request.Title,
                 Message = request.Message,
                 VolunteerPost = await PostValidationAsync(request.VolunteerPostId, PostType.Proposition),
-                NeedfulPost = await PostValidationAsync(request.NeedfulPostId, PostType.Request)
+                NeedfulPost = await PostValidationAsync(request.NeedfulPostId, PostType.Request),
+                SenderId = int.Parse(new JwtSecurityTokenHandler()
+                            .ReadJwtToken("token")
+                            .Claims
+                            .First(claim => claim.Type == "Id")
+                            .Value),
             };
+
 
             await _unitOfWork.PostConnections.InsertAsync(postConnection);
             await _unitOfWork.SaveChangesAsync();

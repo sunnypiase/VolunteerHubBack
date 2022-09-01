@@ -18,6 +18,7 @@ namespace Infrastructure.Repositories
                 postToUpdate.Message = entityToUpdate.Message;
                 postToUpdate.VolunteerPost = entityToUpdate.VolunteerPost;
                 postToUpdate.NeedfulPost = entityToUpdate.NeedfulPost;
+                postToUpdate.SenderId = entityToUpdate.SenderId;
                 return true;
             }
             return false;

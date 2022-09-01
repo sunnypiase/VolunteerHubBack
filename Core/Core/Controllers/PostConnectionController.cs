@@ -18,14 +18,14 @@ namespace WebApi.Controllers
             _mediator = mediator;
         }
 
-        [HttpGet]
+        [HttpGet("all")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetPostConnections()
         {
             return Ok(await _mediator.Send(new GetPostConnectionsQuery()));
         }
 
-        [HttpGet("postConnections")]
+        [HttpGet("currentUser")]
         [Authorize]
         public async Task<IActionResult> GetPostConnectionsOfAuthorizedUser()
         {
