@@ -11,7 +11,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Application.Commands.Users
 {
-    public class RegisterUserCommand : IRequest
+    public record RegisterUserCommand : IRequest
     {
         [Required(ErrorMessage = "Name is reqired")]
         [StringLength(50, ErrorMessage = "Name must be between 2 and 50 characters", MinimumLength = 2)]
