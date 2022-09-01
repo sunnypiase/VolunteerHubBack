@@ -1,4 +1,5 @@
-﻿using Application.Commands.Users;
+﻿using Application.Commands.Tags;
+using Application.Commands.Users;
 using Application.Queries.Users;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -84,6 +85,18 @@ namespace WebApi.Controllers
         {
             return Ok(HttpContext.Request.Cookies["token"] != null);
         }
+        [HttpPut]
+        [Authorize]
+        public async Task<IActionResult> Update([FromBody] UpdateUserInfoCommand userToUpdate)
+        {
+            return Ok(await _mediator.Send(userToUpdate));
+        }
 
+        [HttpPut]
+        [Authorize]
+        public async Task<IActionResult> Update([FromBody] UpdateUserImageCommand userToUpdate)
+        {
+            return Ok(await _mediator.Send(userToUpdate));
+        }
     }
 }
