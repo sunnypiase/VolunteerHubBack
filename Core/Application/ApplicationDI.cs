@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using Application.Services;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 

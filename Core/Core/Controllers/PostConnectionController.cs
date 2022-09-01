@@ -29,9 +29,7 @@ namespace WebApi.Controllers
         [Authorize]
         public async Task<IActionResult> GetPostConnectionsOfAuthorizedUser()
         {
-            return Ok(await _mediator.Send(new GetPostConnectionsByUserQuery(new JwtSecurityTokenHandler()
-                .ReadJwtToken(Request.Cookies["token"])
-                .Claims)));
+            return Ok(await _mediator.Send(new GetPostConnectionsByUserQuery(Request.Cookies["token"])));
         }
 
         [HttpPost]
