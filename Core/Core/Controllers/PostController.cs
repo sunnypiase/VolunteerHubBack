@@ -39,11 +39,17 @@ namespace WebApi.Controllers
                 .Select(tag => int.Parse(tag)))));
         }
 
+        [HttpGet("currentUser")]
+        [Authorize(Roles = "Volunteer,Needful")]
+        public async Task<IActionResult> GetByToken()
+        {
+            return Ok(await _mediator.Send(new GetPostsByTokenQuery(Request.Cookies["token"])));
+        }
+
         [HttpPost]
         [Authorize(Roles = "Volunteer,Needful")]
         public async Task<IActionResult> Post([FromForm] CreatePostCommand post)
         {
-            Console.WriteLine(post.TagIds.Count);
             return Ok(await _mediator.Send(post));
         }
     }
