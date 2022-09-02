@@ -1,4 +1,5 @@
-﻿using Application.Repositories;
+﻿using Application.Models;
+using Application.Repositories;
 using Application.Services;
 using Domain.Enums;
 using Domain.Models;
@@ -7,7 +8,7 @@ using System.Linq.Expressions;
 
 namespace Application.Queries.PostConnections
 {
-    public record GetPostConnectionsByUserQuery : IRequest<IEnumerable<PostConnection>>
+    public record GetPostConnectionsByUserQuery : IRequest<IEnumerable<PostConnectionResponse>>
     {
         public string? Token { get; init; }
         public GetPostConnectionsByUserQuery(string? token)
@@ -16,14 +17,14 @@ namespace Application.Queries.PostConnections
         }
     }
 
-    public class GetPostConnectionsByUserHandler : IRequestHandler<GetPostConnectionsByUserQuery, IEnumerable<PostConnection>>
+    public class GetPostConnectionsByUserHandler : IRequestHandler<GetPostConnectionsByUserQuery, IEnumerable<PostConnectionResponse>>
     {
         private readonly IUnitOfWork _unitOfWork;
         public GetPostConnectionsByUserHandler(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
-        public async Task<IEnumerable<PostConnection>> Handle(GetPostConnectionsByUserQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<PostConnectionResponse>> Handle(GetPostConnectionsByUserQuery request, CancellationToken cancellationToken)
         {
             var userFromToken = new GetUserFromTokenService(request.Token);
 
@@ -32,7 +33,16 @@ namespace Application.Queries.PostConnections
                 pc => pc.VolunteerPost.UserId == userFromToken.UserId :
                 pc => pc.NeedfulPost.UserId == userFromToken.UserId;
 
-            return await _unitOfWork.PostConnections.GetAsync(filter: function, includeProperties: new string[] { "VolunteerPost", "NeedfulPost" });
+            return (await _unitOfWork.PostConnections.GetAsync(filter: function, includeProperties: new string[] { "VolunteerPost", "NeedfulPost" }))
+                .Select(postConnection => new PostConnectionResponse(
+
+                    postConnection.PostConnectionId,
+                    userFromToken.UserId == postConnection.SenderId ? "You have sent a message" : "You have received a message",
+                    postConnection.Title,
+                    postConnection.Message,
+                    postConnection.VolunteerPost,
+                    postConnection.NeedfulPost
+                ));
         }
     }
 }

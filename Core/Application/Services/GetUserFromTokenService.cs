@@ -38,7 +38,7 @@ namespace Application.Services
             {
                 if (_role == null)
                 {
-                    _role = Enum.TryParse(_claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Email)?.Value, out UserRole role) ? role : null;
+                    _role = Enum.TryParse(_claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Role)?.Value, out UserRole role) ? role : null;
                 }
                 return _role;
             }

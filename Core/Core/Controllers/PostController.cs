@@ -1,6 +1,7 @@
 ﻿using Application.Commands.Posts;
 using Application.Queries.Posts;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Controllers
@@ -39,9 +40,10 @@ namespace WebApi.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Volunteer,Needful")]
         public async Task<IActionResult> Post([FromForm] CreatePostCommand post)
         {
-            Console.WriteLine(post.TagIds.Count); 
+            Console.WriteLine(post.TagIds.Count);
             return Ok(await _mediator.Send(post));
         }
     }

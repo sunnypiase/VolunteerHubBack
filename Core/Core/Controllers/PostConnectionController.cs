@@ -27,15 +27,15 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("currentUser")]
-        [Authorize]
+        [Authorize(Roles = "Volunteer,Needful")]
         public async Task<IActionResult> GetPostConnectionsOfAuthorizedUser()
         {
             return Ok(await _mediator.Send(new GetPostConnectionsByUserQuery(Request.Cookies["token"])));
         }
 
         [HttpPost]
-        [Authorize]
-        public async Task<IActionResult> Post([FromBody] CreatePostConnectionRequestModel post)
+        [Authorize(Roles = "Volunteer,Needful")]
+        public async Task<IActionResult> Post([FromBody] CreatePostConnectionRequest post)
         {
             return Ok(await _mediator.Send(new CreatePostConnectionCommand(post.Title, post.Message, post.VolunteerPostId,
                 post.NeedfulPostId, Request.Cookies["token"])));
