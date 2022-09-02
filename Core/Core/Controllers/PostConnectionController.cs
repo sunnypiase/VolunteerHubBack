@@ -4,6 +4,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
+using WebApi.Models;
 
 namespace WebApi.Controllers
 {
@@ -18,27 +19,26 @@ namespace WebApi.Controllers
             _mediator = mediator;
         }
 
-        [HttpGet]
+        [HttpGet("all")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetPostConnections()
         {
             return Ok(await _mediator.Send(new GetPostConnectionsQuery()));
         }
 
-        [HttpGet("postConnections")]
-        [Authorize]
+        [HttpGet("currentUser")]
+        [Authorize(Roles = "Volunteer,Needful")]
         public async Task<IActionResult> GetPostConnectionsOfAuthorizedUser()
         {
-            return Ok(await _mediator.Send(new GetPostConnectionsByUserQuery(new JwtSecurityTokenHandler()
-                .ReadJwtToken(Request.Cookies["token"])
-                .Claims)));
+            return Ok(await _mediator.Send(new GetPostConnectionsByUserQuery(Request.Cookies["token"])));
         }
 
         [HttpPost]
-        [Authorize]
-        public async Task<IActionResult> Post([FromBody] CreatePostConnectionCommand post)
+        [Authorize(Roles = "Volunteer,Needful")]
+        public async Task<IActionResult> Post([FromBody] CreatePostConnectionRequest post)
         {
-            return Ok(await _mediator.Send(post));
+            return Ok(await _mediator.Send(new CreatePostConnectionCommand(post.Title, post.Message, post.VolunteerPostId,
+                post.NeedfulPostId, Request.Cookies["token"])));
         }
     }
 }
