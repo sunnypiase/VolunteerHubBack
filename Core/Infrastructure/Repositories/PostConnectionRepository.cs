@@ -1,5 +1,6 @@
 ﻿using Application.Repositories.Abstractions;
 using Domain.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories
 {
@@ -22,6 +23,13 @@ namespace Infrastructure.Repositories
                 return true;
             }
             return false;
+        }
+
+        public override async Task<PostConnection?> GetByIdAsync(int id)
+        {
+            return await _entity.Include(pc => pc.VolunteerPost)
+                                .Include(pc => pc.NeedfulPost)
+                                .FirstOrDefaultAsync(pc => pc.PostConnectionId == id);
         }
     }
 }

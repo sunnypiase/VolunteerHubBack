@@ -34,15 +34,10 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize(Roles = "Volunteer,Needful")]
+        [Authorize]
         public async Task<IActionResult> GetPostConnectionOfAuthorizedUser(int id)
         {
-            var result = await _mediator.Send(new GetPostConnectionByIdQuery(Request.Cookies["token"], id));
-
-            if (result != null)
-                return Ok(result);
-
-            return Forbid();
+            return Ok(await _mediator.Send(new GetPostConnectionByIdQuery(id)));
         }
 
         [HttpPost]
