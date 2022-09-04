@@ -16,9 +16,12 @@ namespace Application.Queries.PostConnections
 {
     public record GetPostConnectionByIdQuery : IRequest<PostConnectionResponse>
     {
+        public string? Token { get; init; }
+
         public int PostConnectionId { get; init; }
-        public GetPostConnectionByIdQuery(int postConnectionId)
+        public GetPostConnectionByIdQuery(string? token, int postConnectionId)
         {
+            Token = token;
             PostConnectionId = postConnectionId;
         }
     }
@@ -32,15 +35,33 @@ namespace Application.Queries.PostConnections
         }
         public async Task<PostConnectionResponse?> Handle(GetPostConnectionByIdQuery request, CancellationToken cancellationToken)
         {
-            var postConnection = await _unitOfWork.PostConnections.GetByIdAsync(request.PostConnectionId)
+            var userFromToken = new GetUserFromTokenService(request.Token);
+
+            PostConnection postConnection;
+
+            if (userFromToken.Role == UserRole.Admin)
+            {
+                postConnection = await _unitOfWork.PostConnections.GetByIdAsync(request.PostConnectionId)
                 ?? throw new PostConnectionNotFoundException(request.PostConnectionId.ToString());
+            }
+            else
+            {
+                Expression<Func<PostConnection, bool>> function = userFromToken.Role == UserRole.Volunteer ?
+                                pc => pc.VolunteerPost.UserId == userFromToken.UserId && pc.PostConnectionId == request.PostConnectionId :
+                                pc => pc.NeedfulPost.UserId == userFromToken.UserId && pc.PostConnectionId == request.PostConnectionId;
+
+                postConnection = (await _unitOfWork.PostConnections.GetAsync(filter: function, includeProperties: new string[] { "VolunteerPost", "NeedfulPost" })).FirstOrDefault();
+
+                if (postConnection == null)
+                    return null;
+            }
             return new PostConnectionResponse(
-                postConnection.PostConnectionId,
-                "Notification",
-                postConnection.Title,
-                postConnection.Message,
-                postConnection.VolunteerPost,
-                postConnection.NeedfulPost);
+                    postConnection.PostConnectionId,
+                    "Notification",
+                    postConnection.Title,
+                    postConnection.Message,
+                    postConnection.VolunteerPost,
+                    postConnection.NeedfulPost);
         }
     }
 }
