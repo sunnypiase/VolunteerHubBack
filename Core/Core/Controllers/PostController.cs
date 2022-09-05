@@ -55,7 +55,7 @@ namespace WebApi.Controllers
         }
         [HttpPut("UpdatePostById")]
         [Authorize]
-        public async Task<IActionResult> UpdateInfo([FromBody] UpdatePostCommand postToUpdate)
+        public async Task<IActionResult> UpdateInfo([FromForm] UpdatePostCommand postToUpdate)
         {
             return Ok(await _mediator.Send(postToUpdate));
         }

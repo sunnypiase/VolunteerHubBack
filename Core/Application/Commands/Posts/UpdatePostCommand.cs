@@ -13,27 +13,27 @@ namespace Application.Commands.Posts
     public record UpdatePostCommand : IRequest
     {
         [Required]
-        public int PostId { get; init; }
+        public int PostId { get; set; }
         [Required]
-        public string Title { get; init; }
+        public string Title { get; set; }
         [Required]
-        public string Description { get; init; }
+        public string Description { get; set; }
         [Required]
-        public IFormFile PostImageFile { get; init; }
+        public IFormFile PostImageFile { get; set; }
         [Required]
-        public ICollection<Tag> Tags { get; init; }
+        public ICollection<int> TagIds { get; set; }
 
-        public UpdatePostCommand(int postId, string title, string description, IFormFile postImageFile,
-            ICollection<Tag> tags)
-        {
-            PostId = postId;
-            Title = title;
-            Description = description;
-            PostImageFile = postImageFile;
-            Tags = tags;
-        }
+        //public UpdatePostCommand(int postId, string title, string description, IFormFile postImageFile,
+        //    ICollection<Tag> tags)
+        //{
+        //    PostId = postId;
+        //    Title = title;
+        //    Description = description;
+        //    PostImageFile = postImageFile;
+        //    Tags = tags;
+        //}
     }
-
+     
     public class UpdatePostHandler : IRequestHandler<UpdatePostCommand>
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -45,24 +45,41 @@ namespace Application.Commands.Posts
         }
         public async Task<Unit> Handle(UpdatePostCommand request, CancellationToken cancellationToken)
         {
-            Post? postToUpdate = (await _unitOfWork.Posts.GetAsync(post => post.PostId == request.PostId)).FirstOrDefault();
+            Post? postToUpdate = await _unitOfWork.Posts.GetByIdAsync(request.PostId);
 
             if (postToUpdate == null)
             {
                 throw new PostNotFoundException(request.PostId.ToString());
             }
 
+            Console.WriteLine(postToUpdate);
+
             postToUpdate.Title = request.Title;
             postToUpdate.Description = request.Description;
-            postToUpdate.Tags = request.Tags;
-            postToUpdate.PostImage = new Image() { ImageId = postToUpdate.PostImageId, Format = request.PostImageFile.ContentType.Split('/')[1] };
+            postToUpdate.Tags = await GetTagsByIdsAsync(request.TagIds);
+            await _unitOfWork.Images.UpdateAsync(new Image() { ImageId = postToUpdate.PostImageId, Format = request.PostImageFile.ContentType.Split('/')[1] });
+            postToUpdate.PostImage = await _unitOfWork.Images.GetByIdAsync(postToUpdate.PostImageId);
 
-
+            
             await _blobRepository.UploadImage(request.PostImageFile, postToUpdate.PostImage.ToString());
-            await _unitOfWork.Images.UpdateAsync(postToUpdate.PostImage);
             await _unitOfWork.Posts.UpdateAsync(postToUpdate);
+            await _unitOfWork.Images.UpdateAsync(postToUpdate.PostImage);
             await _unitOfWork.SaveChangesAsync();
             return default;
+        }
+
+        private async Task<ICollection<Tag>> GetTagsByIdsAsync(ICollection<int> tagIds)
+        {
+            List<Tag>? tags = new List<Tag>();
+            foreach (int tagId in tagIds)
+            {
+                Tag? tag = await _unitOfWork.Tags.GetByIdAsync(tagId);
+                if (tag != null)
+                {
+                    tags.Add(tag);
+                }
+            }
+            return tags;
         }
     }
 
