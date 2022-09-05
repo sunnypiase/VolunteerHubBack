@@ -4,7 +4,6 @@ using Domain.Enums;
 using Domain.Exceptions;
 using Domain.Models;
 using MediatR;
-using System.IdentityModel.Tokens.Jwt;
 
 namespace Application.Commands.PostConnections
 {
@@ -28,7 +27,7 @@ namespace Application.Commands.PostConnections
     public class CreatePostConnectionHandler : IRequestHandler<CreatePostConnectionCommand, PostConnection>
     {
         private readonly IUnitOfWork _unitOfWork;
-        
+
 
         public CreatePostConnectionHandler(IUnitOfWork unitOfWork)
         {
@@ -44,6 +43,8 @@ namespace Application.Commands.PostConnections
                 VolunteerPost = await PostValidationAsync(request.VolunteerPostId, PostType.Proposition),
                 NeedfulPost = await PostValidationAsync(request.NeedfulPostId, PostType.Request),
                 SenderId = (int)userFromToken.UserId!,
+                SenderHasSeen = false,
+                ReceiverHasSeen = false,
             };
 
 

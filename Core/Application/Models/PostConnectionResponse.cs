@@ -10,7 +10,8 @@ namespace Application.Models
         public string Message { get; init; }
         public Post VolunteerPost { get; init; }
         public Post NeedfulPost { get; init; }
-        public PostConnectionResponse(int postConnectionId, string header, string title, string message, Post volunteerPost, Post needfulPost)
+        public bool UserHasSeen { get; init; }
+        public PostConnectionResponse(int postConnectionId, string header, string title, string message, Post volunteerPost, Post needfulPost, bool userHasSeen)
         {
             PostConnectionId = postConnectionId;
             Header = header;
@@ -18,6 +19,7 @@ namespace Application.Models
             Message = message;
             VolunteerPost = volunteerPost;
             NeedfulPost = needfulPost;
+            UserHasSeen = userHasSeen;
         }
     }
 }

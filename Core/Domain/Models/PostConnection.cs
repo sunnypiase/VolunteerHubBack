@@ -8,5 +8,8 @@
         public Post VolunteerPost { get; set; }
         public Post NeedfulPost { get; set; }
         public int SenderId { get; set; }
+        public bool SenderHasSeen { get; set; }
+        public bool ReceiverHasSeen { get; set; }
+
     }
 }

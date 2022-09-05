@@ -43,7 +43,8 @@ namespace Application.Queries.PostConnections
                     postConnection.Title,
                     postConnection.Message,
                     postConnection.VolunteerPost,
-                    postConnection.NeedfulPost
+                    postConnection.NeedfulPost,
+                    userFromToken.UserId == postConnection.SenderId ? postConnection.SenderHasSeen : postConnection.ReceiverHasSeen
                 ));
         }
     }

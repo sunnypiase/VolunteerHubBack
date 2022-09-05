@@ -20,6 +20,8 @@ namespace Infrastructure.Repositories
                 postToUpdate.VolunteerPost = entityToUpdate.VolunteerPost;
                 postToUpdate.NeedfulPost = entityToUpdate.NeedfulPost;
                 postToUpdate.SenderId = entityToUpdate.SenderId;
+                postToUpdate.SenderHasSeen = entityToUpdate.SenderHasSeen;
+                postToUpdate.ReceiverHasSeen = entityToUpdate.ReceiverHasSeen;
                 return true;
             }
             return false;

@@ -39,7 +39,7 @@ namespace Application.Queries.PostConnections
             {
                 return new PostConnectionResponse(
                     postConnection.PostConnectionId,
-                    userFromToken.Role == UserRole.Admin ? 
+                    userFromToken.Role == UserRole.Admin ?
                         "Notification" :
                         userFromToken.UserId == postConnection.SenderId ?
                             "You have sent a message" :
@@ -47,7 +47,9 @@ namespace Application.Queries.PostConnections
                     postConnection.Title,
                     postConnection.Message,
                     postConnection.VolunteerPost,
-                    postConnection.NeedfulPost);
+                    postConnection.NeedfulPost,
+                    userFromToken.UserId == postConnection.SenderId ? postConnection.SenderHasSeen : postConnection.ReceiverHasSeen
+                    );
             }
             throw new PostConnectionNotFoundException(request.PostConnectionId.ToString());
         }

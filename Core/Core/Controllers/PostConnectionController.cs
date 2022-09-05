@@ -46,5 +46,14 @@ namespace WebApi.Controllers
             return Ok(await _mediator.Send(new CreatePostConnectionCommand(post.Title, post.Message, post.VolunteerPostId,
                 post.NeedfulPostId, Request.Cookies["token"])));
         }
+
+        [HttpPut("revision")]
+        [Authorize(Roles = "Volunteer,Needful")]
+        public async Task<IActionResult> UpdatePostConnectionRevision([FromBody] UpdatePostConnectionRevisionRequest postConnection)
+        {
+            return Ok(await _mediator.Send(new UpdatePostConnectionRevisionCommand(
+                Request.Cookies["token"],
+                postConnection.PostConnectionIds)));
+        }
     }
 }
