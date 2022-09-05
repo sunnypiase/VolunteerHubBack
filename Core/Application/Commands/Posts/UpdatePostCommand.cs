@@ -23,7 +23,7 @@ namespace Application.Commands.Posts
         [Required]
         public ICollection<Tag> Tags { get; init; }
 
-        UpdatePostCommand(int postId, string title, string description, IFormFile postImageFile,
+        public UpdatePostCommand(int postId, string title, string description, IFormFile postImageFile,
             ICollection<Tag> tags)
         {
             PostId = postId;

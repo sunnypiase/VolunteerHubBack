@@ -19,13 +19,5 @@ namespace Application.Models
             VolunteerPost = volunteerPost;
             NeedfulPost = needfulPost;
         }
-        public PostConnectionResponse()
-        {
-
-        }
-        public static async Task<PostConnectionResponse> CreateAsync(int postConnectionId, string header, string title, string message, Post volunteerPost, Post needfulPost)
-        {
-            return new PostConnectionResponse(postConnectionId, header, title, message, volunteerPost, needfulPost);
-        }
     }
 }

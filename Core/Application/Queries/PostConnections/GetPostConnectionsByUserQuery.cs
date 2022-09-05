@@ -35,17 +35,16 @@ namespace Application.Queries.PostConnections
 
 
             return (await _unitOfWork.PostConnections.GetAsync(filter: function, includeProperties: new string[] { "VolunteerPost.PostImage", "VolunteerPost.Tags", "VolunteerPost.User.ProfileImage", "NeedfulPost.PostImage", "NeedfulPost.Tags", "NeedfulPost.User.ProfileImage" }))
-                .Select(postConnection => new PostConnectionResponse()
-                {
-                    PostConnectionId = postConnection.PostConnectionId,
-                    Header = userFromToken.UserId == postConnection.SenderId ?
+                .Select(postConnection => new PostConnectionResponse(
+                    postConnection.PostConnectionId,
+                    userFromToken.UserId == postConnection.SenderId ?
                         $"You have sent a message to {(userFromToken.Role == UserRole.Needful ? $"{postConnection.VolunteerPost.User.Name} {postConnection.VolunteerPost.User.Surname}" : $"{postConnection.NeedfulPost.User.Name} {postConnection.NeedfulPost.User.Surname}")}" :
                         $"You have received a message from {(userFromToken.Role == UserRole.Needful ? $"{postConnection.VolunteerPost.User.Name} {postConnection.VolunteerPost.User.Surname}" : $"{postConnection.NeedfulPost.User.Name} {postConnection.NeedfulPost.User.Surname}")}",
-                    Title = postConnection.Title,
-                    Message = postConnection.Message,
-                    NeedfulPost = postConnection.NeedfulPost,
-                    VolunteerPost = postConnection.VolunteerPost
-                });
+                    postConnection.Title,
+                    postConnection.Message,
+                    postConnection.VolunteerPost,
+                    postConnection.NeedfulPost
+                ));
         }
     }
 }
