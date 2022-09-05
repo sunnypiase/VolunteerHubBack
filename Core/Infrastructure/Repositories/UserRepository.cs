@@ -32,10 +32,6 @@ namespace Infrastructure.Repositories
         {
             return await _entity
                 .Include(user => user.ProfileImage)
-                .Include(user => user.Posts)
-                .ThenInclude(post => post.Tags)
-                .Include(user => user.Posts)
-                .ThenInclude(post => post.PostImage)
                 .FirstOrDefaultAsync(user => user.UserId == id) ?? throw new UserNotFoundException(id);
         }
     }

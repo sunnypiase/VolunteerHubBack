@@ -4,6 +4,7 @@ using Application.Services;
 using Domain.Enums;
 using Domain.Models;
 using MediatR;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace Application.Queries.PostConnections
@@ -33,16 +34,17 @@ namespace Application.Queries.PostConnections
                 pc => pc.VolunteerPost.UserId == userFromToken.UserId :
                 pc => pc.NeedfulPost.UserId == userFromToken.UserId;
 
-            return (await _unitOfWork.PostConnections.GetAsync(filter: function, includeProperties: new string[] { "VolunteerPost", "NeedfulPost" }))
-                .Select(postConnection => new PostConnectionResponse(
 
-                    postConnection.PostConnectionId,
-                    userFromToken.UserId == postConnection.SenderId ? "You have sent a message" : "You have received a message",
-                    postConnection.Title,
-                    postConnection.Message,
-                    postConnection.VolunteerPost,
-                    postConnection.NeedfulPost
-                ));
+            return (await _unitOfWork.PostConnections.GetAsync(filter: function, includeProperties: new string[] { "VolunteerPost", "NeedfulPost" }))
+                .Select(postConnection => new PostConnectionResponse() { // TODO make it async
+
+                    PostConnectionId = postConnection.PostConnectionId,
+                    Header = userFromToken.UserId == postConnection.SenderId ? "You have sent a message" : "You have received a message",
+                    Title = postConnection.Title,
+                    Message= postConnection.Message,
+                    NeedfulPost =  _unitOfWork.Posts.GetByIdAsync(postConnection.VolunteerPost.PostId).Result, 
+                    VolunteerPost = _unitOfWork.Posts.GetByIdAsync(postConnection.NeedfulPost.PostId).Result}
+                );
         }
     }
 }

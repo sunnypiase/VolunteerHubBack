@@ -1,5 +1,7 @@
 ﻿using Application.Commands.PostConnections;
+using Application.Commands.Posts;
 using Application.Queries.PostConnections;
+using Application.Services;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -31,6 +33,13 @@ namespace WebApi.Controllers
         public async Task<IActionResult> GetPostConnectionsOfAuthorizedUser()
         {
             return Ok(await _mediator.Send(new GetPostConnectionsByUserQuery(Request.Cookies["token"])));
+        }
+
+        [HttpGet("{id}")]
+        [Authorize]
+        public async Task<IActionResult> GetPostConnectionOfAuthorizedUser(int id)
+        {
+            return Ok(await _mediator.Send(new GetPostConnectionByIdQuery(Request.Cookies["token"], id)));
         }
 
         [HttpPost]

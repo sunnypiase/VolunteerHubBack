@@ -1,4 +1,5 @@
 ﻿using Application.Commands.Posts;
+using Application.Commands.Users;
 using Application.Queries.Posts;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -39,12 +40,32 @@ namespace WebApi.Controllers
                 .Select(tag => int.Parse(tag)))));
         }
 
+        [HttpGet("currentUser")]
+        [Authorize(Roles = "Volunteer,Needful")]
+        public async Task<IActionResult> GetByToken()
+        {
+            return Ok(await _mediator.Send(new GetPostsByTokenQuery(Request.Cookies["token"])));
+        }
+
         [HttpPost]
         [Authorize(Roles = "Volunteer,Needful")]
         public async Task<IActionResult> Post([FromForm] CreatePostCommand post)
         {
-            Console.WriteLine(post.TagIds.Count);
             return Ok(await _mediator.Send(post));
+        }
+        [HttpPut("UpdatePostById")]
+        [Authorize]
+        public async Task<IActionResult> UpdateInfo([FromBody] UpdatePostCommand postToUpdate)
+        {
+            return Ok(await _mediator.Send(postToUpdate));
+        }
+
+
+        [HttpDelete]
+        [Authorize(Roles = "Volunteer,Needful")]
+        public async Task<IActionResult> DeletePost(int id)
+        {
+            return Ok(await _mediator.Send(new DeletePostCommand(id)));
         }
     }
 }
