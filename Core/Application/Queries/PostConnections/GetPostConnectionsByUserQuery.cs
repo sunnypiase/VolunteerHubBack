@@ -4,7 +4,6 @@ using Application.Services;
 using Domain.Enums;
 using Domain.Models;
 using MediatR;
-using System.Linq;
 using System.Linq.Expressions;
 
 namespace Application.Queries.PostConnections
@@ -35,16 +34,18 @@ namespace Application.Queries.PostConnections
                 pc => pc.NeedfulPost.UserId == userFromToken.UserId;
 
 
-            return (await _unitOfWork.PostConnections.GetAsync(filter: function, includeProperties: new string[] { "VolunteerPost", "NeedfulPost" }))
-                .Select(postConnection => new PostConnectionResponse() { // TODO make it async
-
+            return (await _unitOfWork.PostConnections.GetAsync(filter: function, includeProperties: new string[] { "VolunteerPost.PostImage", "VolunteerPost.Tags", "VolunteerPost.User.ProfileImage", "NeedfulPost.PostImage", "NeedfulPost.Tags", "NeedfulPost.User.ProfileImage" }))
+                .Select(postConnection => new PostConnectionResponse()
+                {
                     PostConnectionId = postConnection.PostConnectionId,
-                    Header = userFromToken.UserId == postConnection.SenderId ? "You have sent a message" : "You have received a message",
+                    Header = userFromToken.UserId == postConnection.SenderId ?
+                        $"You have sent a message to {(userFromToken.Role == UserRole.Needful ? $"{postConnection.VolunteerPost.User.Name} {postConnection.VolunteerPost.User.Surname}" : $"{postConnection.NeedfulPost.User.Name} {postConnection.NeedfulPost.User.Surname}")}" :
+                        $"You have received a message from {(userFromToken.Role == UserRole.Needful ? $"{postConnection.VolunteerPost.User.Name} {postConnection.VolunteerPost.User.Surname}" : $"{postConnection.NeedfulPost.User.Name} {postConnection.NeedfulPost.User.Surname}")}",
                     Title = postConnection.Title,
-                    Message= postConnection.Message,
-                    NeedfulPost =  _unitOfWork.Posts.GetByIdAsync(postConnection.VolunteerPost.PostId).Result, 
-                    VolunteerPost = _unitOfWork.Posts.GetByIdAsync(postConnection.NeedfulPost.PostId).Result}
-                );
+                    Message = postConnection.Message,
+                    NeedfulPost = postConnection.NeedfulPost,
+                    VolunteerPost = postConnection.VolunteerPost
+                });
         }
     }
 }

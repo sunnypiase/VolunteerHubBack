@@ -1,11 +1,8 @@
 ﻿using Application.Commands.PostConnections;
-using Application.Commands.Posts;
 using Application.Queries.PostConnections;
-using Application.Services;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.IdentityModel.Tokens.Jwt;
 using WebApi.Models;
 
 namespace WebApi.Controllers

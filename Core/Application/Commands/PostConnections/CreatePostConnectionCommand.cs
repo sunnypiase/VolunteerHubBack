@@ -65,8 +65,6 @@ namespace Application.Commands.PostConnections
             }
 
             return post;
-            Console.WriteLine("Hello world");
-
         }
     }
 }
