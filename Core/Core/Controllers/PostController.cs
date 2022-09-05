@@ -61,10 +61,10 @@ namespace WebApi.Controllers
         }
 
         [HttpDelete]
-        [Authorize(Roles = "Volunteer,Needful")]
+        [Authorize]
         public async Task<IActionResult> DeletePost(int id)
         {
-            return Ok(await _mediator.Send(new DeletePostCommand(id)));
+            return Ok(await _mediator.Send(new DeletePostCommand(id, Request.Cookies["token"])));
         }
     }
 }
