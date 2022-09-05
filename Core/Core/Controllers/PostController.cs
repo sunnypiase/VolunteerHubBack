@@ -1,4 +1,5 @@
 ﻿using Application.Commands.Posts;
+using Application.Commands.Users;
 using Application.Queries.Posts;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -51,6 +52,20 @@ namespace WebApi.Controllers
         public async Task<IActionResult> Post([FromForm] CreatePostCommand post)
         {
             return Ok(await _mediator.Send(post));
+        }
+        [HttpPut("UpdatePostById")]
+        [Authorize]
+        public async Task<IActionResult> UpdateInfo([FromBody] UpdatePostCommand postToUpdate)
+        {
+            return Ok(await _mediator.Send(postToUpdate));
+        }
+
+
+        [HttpDelete]
+        [Authorize(Roles = "Volunteer,Needful")]
+        public async Task<IActionResult> DeletePost(int id)
+        {
+            return Ok(await _mediator.Send(new DeletePostCommand(id)));
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Application.Commands.PostConnections;
+using Application.Commands.Posts;
 using Application.Queries.PostConnections;
 using Application.Services;
 using MediatR;
