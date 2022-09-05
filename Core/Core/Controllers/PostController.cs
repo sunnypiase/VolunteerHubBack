@@ -60,7 +60,6 @@ namespace WebApi.Controllers
             return Ok(await _mediator.Send(postToUpdate));
         }
 
-
         [HttpDelete]
         [Authorize(Roles = "Volunteer,Needful")]
         public async Task<IActionResult> DeletePost(int id)

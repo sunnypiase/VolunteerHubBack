@@ -13,15 +13,25 @@ namespace Application.Commands.Posts
     public record UpdatePostCommand : IRequest
     {
         [Required]
-        public int PostId { get; set; }
+        public int PostId { get; init; }
         [Required]
-        public string Title { get; set; }
+        public string Title { get; init; }
         [Required]
-        public string Description { get; set; }
+        public string Description { get; init; }
         [Required]
-        public IFormFile PostImageFile { get; set; }
+        public IFormFile PostImageFile { get; init; }
         [Required]
-        public ICollection<Tag> Tags { get; set; }
+        public ICollection<Tag> Tags { get; init; }
+
+        UpdatePostCommand(int postId, string title, string description, IFormFile postImageFile,
+            ICollection<Tag> tags)
+        {
+            PostId = PostId;
+            Title = title;
+            Description = description;
+            PostImageFile = postImageFile;
+            Tags = tags;
+        }
     }
 
     public class UpdatePostHandler : IRequestHandler<UpdatePostCommand>
