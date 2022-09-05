@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Application.Commands.Posts
 {
-    public class CreatePostCommand : IRequest<Post>
+    public record CreatePostCommand : IRequest<Post>
     {
         // can there be a post without an image or tags?
         public int UserId { get; set; }
