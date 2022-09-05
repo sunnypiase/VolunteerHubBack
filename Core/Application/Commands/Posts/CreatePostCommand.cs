@@ -15,7 +15,7 @@ namespace Application.Commands.Posts
         public string Title { get; set; }
         public string Description { get; set; }
         public ICollection<int> TagIds { get; set; }
-         public IFormFile ImageFile { get; set; }
+        public IFormFile ImageFile { get; set; }
 
     }
 

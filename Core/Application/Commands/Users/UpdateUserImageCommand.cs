@@ -27,13 +27,11 @@ namespace Application.Commands.Users
 
     public class UpdateUserImageHandler : IRequestHandler<UpdateUserImageCommand>
     {
-        private readonly IMediator _mediator;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IBlobRepository _blobRepository;
 
-        public UpdateUserImageHandler(IMediator mediator, IUnitOfWork unitOfWork, IBlobRepository blobRepository)
+        public UpdateUserImageHandler(IUnitOfWork unitOfWork, IBlobRepository blobRepository)
         {
-            _mediator = mediator;
             _unitOfWork = unitOfWork;
             _blobRepository = blobRepository;
         }
