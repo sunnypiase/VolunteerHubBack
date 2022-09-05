@@ -26,7 +26,7 @@ namespace Application.Commands.Posts
         UpdatePostCommand(int postId, string title, string description, IFormFile postImageFile,
             ICollection<Tag> tags)
         {
-            PostId = PostId;
+            PostId = postId;
             Title = title;
             Description = description;
             PostImageFile = postImageFile;
