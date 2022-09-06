@@ -55,5 +55,12 @@ namespace WebApi.Controllers
                 Request.Cookies["token"],
                 postConnection.PostConnectionIds)));
         }
+
+        [HttpDelete]
+        [Authorize]
+        public async Task<IActionResult> DeletePostConnection(int id)
+        {
+            return Ok(await _mediator.Send(new DeletePostConnectionCommand(id, Request.Cookies["token"])));
+        }
     }
 }
