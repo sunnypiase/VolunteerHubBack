@@ -48,7 +48,6 @@ builder.Services.AddCors(options =>
 builder.Services.AddControllers().AddNewtonsoftJson(options =>
 {
     options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-
 });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -78,16 +77,13 @@ app.UseCors(x => x
         .AllowAnyMethod()
         .AllowAnyHeader()
 );
-app.UseRouting();
-app.UseEndpoints(endpoints =>
-    {
-        endpoints.MapControllers();
-    });
+
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 //Take jwt from cookies and paste it into Authorization header
 app.UseMiddleware<TokenFromCookiesMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.MapControllers();
 
 app.Run();
