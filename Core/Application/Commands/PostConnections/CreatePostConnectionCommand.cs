@@ -1,4 +1,5 @@
-﻿using Application.UnitOfWorks;
+﻿using Application.Repositories;
+using Application.Services;
 using Domain.Enums;
 using Domain.Exceptions;
 using Domain.Models;
@@ -6,38 +7,54 @@ using MediatR;
 
 namespace Application.Commands.PostConnections
 {
-    public class CreatePostConnectionCommand : IRequest<PostConnection>
+    public record CreatePostConnectionCommand : IRequest<PostConnection>
     {
-        public string Title { get; set; }
-        public string Message { get; set; }
-        public int VolunteerPostId { get; set; }
-        public int NeedfulPostId { get; set; }
+        public string? Token { get; init; }
+        public string Title { get; init; }
+        public string Message { get; init; }
+        public int VolunteerPostId { get; init; }
+        public int NeedfulPostId { get; init; }
+        public CreatePostConnectionCommand(string title, string message, int volunteerPostId, int needfulPostId, string? token)
+        {
+            Title = title;
+            Message = message;
+            VolunteerPostId = volunteerPostId;
+            NeedfulPostId = needfulPostId;
+            Token = token;
+        }
     }
-    public class CreatePostHandler : IRequestHandler<CreatePostConnectionCommand, PostConnection>
+
+    public class CreatePostConnectionHandler : IRequestHandler<CreatePostConnectionCommand, PostConnection>
     {
         private readonly IUnitOfWork _unitOfWork;
 
-        public CreatePostHandler(IUnitOfWork unitOfWork)
+
+        public CreatePostConnectionHandler(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
         public async Task<PostConnection> Handle(CreatePostConnectionCommand request, CancellationToken cancellationToken)
         {
-            var postConnection = new PostConnection()
+            var userFromToken = new GetUserFromTokenService(request.Token);
+            PostConnection? postConnection = new PostConnection()
             {
                 Title = request.Title,
                 Message = request.Message,
-                VolunteerPost = await PostValidation(request.VolunteerPostId, PostType.PROPOSITION),
-                NeedfulPost = await PostValidation(request.NeedfulPostId, PostType.REQUEST)
+                VolunteerPost = await PostValidationAsync(request.VolunteerPostId, PostType.Proposition),
+                NeedfulPost = await PostValidationAsync(request.NeedfulPostId, PostType.Request),
+                SenderId = (int)userFromToken.UserId!,
+                SenderHasSeen = false,
+                ReceiverHasSeen = false,
             };
 
-            await _unitOfWork.PostConnections.Insert(postConnection);
-            await _unitOfWork.SaveChanges();
+
+            await _unitOfWork.PostConnections.InsertAsync(postConnection);
+            await _unitOfWork.SaveChangesAsync();
             return postConnection;
         }
-        private async Task<Post> PostValidation(int id, PostType expectedType)
+        private async Task<Post> PostValidationAsync(int id, PostType expectedType)
         {
-            var post = await _unitOfWork.Posts.GetById(id);
+            Post? post = await _unitOfWork.Posts.GetByIdAsync(id);
 
             if (post == null)
             {

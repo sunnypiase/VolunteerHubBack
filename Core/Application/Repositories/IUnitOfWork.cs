@@ -1,14 +1,14 @@
 ﻿using Application.Repositories.Abstractions;
-using Domain.Abstractions;
 
-namespace Application.UnitOfWorks
+namespace Application.Repositories
 {
-    public interface IUnitOfWork : IDisposable
+    public interface IUnitOfWork
     {
         public ITagRepository Tags { get; }
         public IUserRepository Users { get; }
         public IPostRepository Posts { get; }
         public IPostConnectionRepository PostConnections { get; }
-        public Task SaveChanges();
+        public IImageRepository Images { get; }
+        public Task SaveChangesAsync();
     }
 }

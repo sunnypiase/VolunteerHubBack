@@ -1,10 +1,17 @@
-﻿using Application.UnitOfWorks;
+﻿using Application.Repositories;
 using Domain.Models;
 using MediatR;
 
 namespace Application.Commands.Tags
 {
-    public record CreateTagCommand(string Name) : IRequest<Tag>;
+    public record CreateTagCommand : IRequest<Tag>
+    {
+        public string Name { get; init; }
+        public CreateTagCommand(string name)
+        {
+            Name = name;
+        }
+    }
 
     public class CreateTagHandler : IRequestHandler<CreateTagCommand, Tag>
     {
@@ -16,13 +23,13 @@ namespace Application.Commands.Tags
         }
         public async Task<Tag> Handle(CreateTagCommand request, CancellationToken cancellationToken)
         {
-            var tag = new Tag()
+            Tag? tag = new Tag()
             {
                 Name = request.Name
             };
 
-            await _unitOfWork.Tags.Insert(tag);
-            await _unitOfWork.SaveChanges();
+            await _unitOfWork.Tags.InsertAsync(tag);
+            await _unitOfWork.SaveChangesAsync();
             return tag;
         }
     }

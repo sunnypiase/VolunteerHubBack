@@ -1,10 +1,10 @@
-﻿using Domain.Abstractions;
+﻿using Application.Repositories.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
 namespace Infrastructure.Repositories
 {
-    public class SqlGenericRepository<TEntity> : IGenericRepository<TEntity> where TEntity : class
+    public class SqlGenericRepository<TEntity, IdType> : IGenericRepository<TEntity, IdType> where TEntity : class
     {
         protected readonly ApplicationContext _applicationContext;
         protected readonly DbSet<TEntity> _entity;
@@ -13,23 +13,24 @@ namespace Infrastructure.Repositories
             _applicationContext = applicationContext;
             _entity = _applicationContext.Set<TEntity>();
         }
-        public virtual async Task<IEnumerable<TEntity>> Get(
-            Expression<Func<TEntity, bool>> filter = null,
-            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
-            string commaSeparatedIncludeProperties = "")
+        public virtual async Task<IEnumerable<TEntity>> GetAsync(
+            Expression<Func<TEntity, bool>>? filter = null,
+            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
+            string[]? includeProperties = null)
         {
-            IQueryable<TEntity> query = _entity;
+            IQueryable<TEntity> query = _entity.AsNoTracking();
 
+            if (includeProperties != null)
+            {
+                foreach (string? includeProperty in includeProperties)
+                {
+                    query = query.Include(includeProperty);
+                }
+            }
             if (filter != null)
             {
                 query = query.Where(filter);
             }
-
-            foreach (string? includeProperty in commaSeparatedIncludeProperties.Split(',', StringSplitOptions.RemoveEmptyEntries))
-            {
-                query = query.Include(includeProperty);
-            }
-
             if (orderBy != null)
             {
                 query = orderBy(query);
@@ -37,16 +38,16 @@ namespace Infrastructure.Repositories
 
             return await query.ToListAsync();
         }
-        public virtual async Task<TEntity?> GetById<IdType>(IdType id)
+        public virtual async Task<TEntity?> GetByIdAsync(IdType id)
         {
             return await _entity.FindAsync(id);
         }
-        public virtual async Task<bool> Insert(TEntity entity)
+        public virtual async Task<bool> InsertAsync(TEntity entity)
         {
             await _entity.AddAsync(entity);
             return true;
         }
-        public virtual async Task<bool> Delete<IdType>(IdType id)
+        public virtual async Task<bool> DeleteAsync(IdType id)
         {
             TEntity? entityToDelete = await _entity.FindAsync(id);
 
@@ -57,7 +58,7 @@ namespace Infrastructure.Repositories
             }
             return false;
         }
-        public virtual Task<bool> Update(TEntity entityToUpdate)
+        public virtual Task<bool> UpdateAsync(TEntity entityToUpdate)
         {
             throw new NotImplementedException();
         }

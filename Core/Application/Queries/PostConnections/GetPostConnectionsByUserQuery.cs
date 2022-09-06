@@ -1,37 +1,51 @@
-﻿using Application.UnitOfWorks;
+﻿using Application.Models;
+using Application.Repositories;
+using Application.Services;
 using Domain.Enums;
 using Domain.Models;
 using MediatR;
 using System.Linq.Expressions;
-using System.Security.Claims;
 
 namespace Application.Queries.PostConnections
 {
-    public record GetPostConnectionsByUserQuery(IEnumerable<Claim> Claims) : IRequest<IEnumerable<PostConnection>>;
+    public record GetPostConnectionsByUserQuery : IRequest<IEnumerable<PostConnectionResponse>>
+    {
+        public string? Token { get; init; }
+        public GetPostConnectionsByUserQuery(string? token)
+        {
+            Token = token;
+        }
+    }
 
-    public class GetPostConnectionsByUserIdQueryHandler : IRequestHandler<GetPostConnectionsByUserQuery, IEnumerable<PostConnection>>
+    public class GetPostConnectionsByUserHandler : IRequestHandler<GetPostConnectionsByUserQuery, IEnumerable<PostConnectionResponse>>
     {
         private readonly IUnitOfWork _unitOfWork;
-        public GetPostConnectionsByUserIdQueryHandler(IUnitOfWork unitOfWork)
+        public GetPostConnectionsByUserHandler(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
-        public async Task<IEnumerable<PostConnection>> Handle(GetPostConnectionsByUserQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<PostConnectionResponse>> Handle(GetPostConnectionsByUserQuery request, CancellationToken cancellationToken)
         {
-            var UserId = int.Parse(request.Claims
-                .First(claim => claim.Type == "Id")
-                .Value);
-
-            var UserRole = Enum.Parse<UserRole>(request.Claims
-                .First(claim => claim.Type == ClaimTypes.Role)
-                .Value);
+            var userFromToken = new GetUserFromTokenService(request.Token);
 
             Expression<Func<PostConnection, bool>> function =
-                UserRole == UserRole.Volunteer ?
-                pc => pc.VolunteerPost.UserId == UserId :
-                pc => pc.NeedfulPost.UserId == UserId;
+                userFromToken.Role == UserRole.Volunteer ?
+                pc => pc.VolunteerPost.UserId == userFromToken.UserId :
+                pc => pc.NeedfulPost.UserId == userFromToken.UserId;
 
-            return await _unitOfWork.PostConnections.Get(filter: function, commaSeparatedIncludeProperties: "VolunteerPost,NeedfulPost");
+
+            return (await _unitOfWork.PostConnections.GetAsync(filter: function, includeProperties: new string[] { "VolunteerPost.PostImage", "VolunteerPost.Tags", "VolunteerPost.User.ProfileImage", "NeedfulPost.PostImage", "NeedfulPost.Tags", "NeedfulPost.User.ProfileImage" }))
+                .Select(postConnection => new PostConnectionResponse(
+                    postConnection.PostConnectionId,
+                    userFromToken.UserId == postConnection.SenderId ?
+                        $"You have sent a message to {(userFromToken.Role == UserRole.Needful ? $"{postConnection.VolunteerPost.User.Name} {postConnection.VolunteerPost.User.Surname}" : $"{postConnection.NeedfulPost.User.Name} {postConnection.NeedfulPost.User.Surname}")}" :
+                        $"You have received a message from {(userFromToken.Role == UserRole.Needful ? $"{postConnection.VolunteerPost.User.Name} {postConnection.VolunteerPost.User.Surname}" : $"{postConnection.NeedfulPost.User.Name} {postConnection.NeedfulPost.User.Surname}")}",
+                    postConnection.Title,
+                    postConnection.Message,
+                    postConnection.VolunteerPost,
+                    postConnection.NeedfulPost,
+                    userFromToken.UserId == postConnection.SenderId ? postConnection.SenderHasSeen : postConnection.ReceiverHasSeen
+                ));
         }
     }
 }

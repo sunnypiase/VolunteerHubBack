@@ -1,5 +1,5 @@
-﻿using Application.Services;
-using Application.UnitOfWorks;
+﻿using Application.Repositories;
+using Application.Services;
 using Domain.Exceptions;
 using Domain.Models;
 using MediatR;
@@ -16,17 +16,22 @@ namespace Application.Commands.Users
     {
         [Required(ErrorMessage = "Login is required")]
         [EmailAddress]
-        public string Login { get; set; }
+        public string Login { get; init; }
         [Required(ErrorMessage = "Password is reqired")]
         [StringLength(20, ErrorMessage = "Password must be between 8 and 20 characters", MinimumLength = 8)]
-        public string Password { get; set; }
+        public string Password { get; init; }
+        public LoginUserCommand(string login, string password)
+        {
+            Login = login;
+            Password = password;
+        }
     }
-    public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, string>
+    public class LoginUserHandler : IRequestHandler<LoginUserCommand, string>
     {
         private readonly IConfiguration _configuration;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly HashingService _hashingService;
-        public LoginUserCommandHandler(IUnitOfWork unitOfWork, HashingService hashingService, IConfiguration configuration)
+        private readonly IHashingService _hashingService;
+        public LoginUserHandler(IUnitOfWork unitOfWork, IHashingService hashingService, IConfiguration configuration)
         {
             _unitOfWork = unitOfWork;
             _hashingService = hashingService;
@@ -34,8 +39,8 @@ namespace Application.Commands.Users
         }
         public async Task<string> Handle(LoginUserCommand request, CancellationToken cancellationToken)
         {
-            var passwordHash = _hashingService.GetHash(request.Password);
-            var user = (await _unitOfWork.Users.Get(user => user.Email == request.Login && user.Password == passwordHash)).FirstOrDefault();
+            byte[]? passwordHash = _hashingService.GetHash(request.Password);
+            User? user = (await _unitOfWork.Users.GetAsync(user => user.Email == request.Login && user.Password == passwordHash)).FirstOrDefault();
 
             if (user == null)
             {
@@ -46,17 +51,17 @@ namespace Application.Commands.Users
         }
         private string GenerateJwtToken(User user)
         {
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Key"]));
-            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+            SymmetricSecurityKey? securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Key"]));
+            SigningCredentials? credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-            var claims = new List<Claim>
+            List<Claim>? claims = new List<Claim>
             {
                 new Claim("Id", user.UserId.ToString()),
                 new Claim(ClaimTypes.Email, user.Email),
                 new Claim(ClaimTypes.Role, user.Role.ToString())
             };
 
-            var token = new JwtSecurityToken(
+            JwtSecurityToken? token = new JwtSecurityToken(
                 claims: claims,
                 expires: DateTime.Now.AddDays(1),
                 signingCredentials: credentials);

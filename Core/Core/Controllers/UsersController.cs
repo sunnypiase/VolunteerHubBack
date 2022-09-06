@@ -1,8 +1,10 @@
-﻿using Application.Commands.Users;
+﻿using Application.Commands.Tags;
+using Application.Commands.Users;
 using Application.Queries.Users;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace WebApi.Controllers
 {
@@ -20,7 +22,7 @@ namespace WebApi.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginUserCommand loginUserCommand)
         {
-            var token = await _mediator.Send(loginUserCommand);
+            string? token = await _mediator.Send(loginUserCommand);
             HttpContext.Response.Cookies.Append("token", token, new CookieOptions
             {
                 MaxAge = TimeSpan.FromDays(1)
@@ -30,7 +32,7 @@ namespace WebApi.Controllers
 
         [AllowAnonymous]
         [HttpPost("register")]
-        public async Task<IActionResult> Register(RegisterUserCommand registerUserCommand)
+        public async Task<IActionResult> Register([FromForm]RegisterUserCommand registerUserCommand)
         {
             await _mediator.Send(registerUserCommand);
             return Ok("Successfully registered!");
@@ -38,7 +40,7 @@ namespace WebApi.Controllers
 
         [Authorize]
         [HttpPost("logout")]
-        public async Task<IActionResult> LogOut()
+        public IActionResult LogOut()
         {
             HttpContext.Response.Cookies.Delete("token");
             return Ok("Successfully logged out");
@@ -46,9 +48,9 @@ namespace WebApi.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> GetUsers()
+        public async Task<IActionResult> GetUsers(CancellationToken token)
         {
-            return Ok(await _mediator.Send(new GetUsersQuery()));
+            return Ok(await _mediator.Send(new GetUsersQuery(), token));
         }
 
         [HttpGet("{id:int}")]
@@ -58,11 +60,43 @@ namespace WebApi.Controllers
             return Ok(await _mediator.Send(new GetUserByIdQuery(id)));
         }
 
+        [HttpGet("by-token")]
+        [Authorize]
+        public async Task<IActionResult> GetUserByToken()
+        {
+            int userId = int.Parse(new JwtSecurityTokenHandler()
+                .ReadJwtToken(Request.Cookies["token"])
+                .Claims
+                .First(claim => claim.Type == "Id")
+                .Value);
+
+            return Ok(await _mediator.Send(new GetUserByIdQuery(userId)));
+        }
+
         [HttpGet("{email}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetUserByEmail(string email)
         {
             return Ok(await _mediator.Send(new GetUserByEmailQuery(email)));
+        }
+        [AllowAnonymous]
+        [HttpGet("ifUserAuthorize")]
+        public IActionResult GetIfUserExist()
+        {
+            return Ok(HttpContext.Request.Cookies["token"] != null);
+        }
+        [HttpPut("info")]
+        [Authorize]
+        public async Task<IActionResult> UpdateInfo([FromBody] UpdateUserInfoCommand userToUpdate)
+        {
+            return Ok(await _mediator.Send(userToUpdate));
+        }
+
+        [HttpPut("image")]
+        [Authorize]
+        public async Task<IActionResult> UpdateImage([FromForm] UpdateUserImageCommand userToUpdate)
+        {
+            return Ok(await _mediator.Send(userToUpdate));
         }
     }
 }

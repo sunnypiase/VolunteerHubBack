@@ -1,13 +1,20 @@
+using Application;
+using Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.IdentityModel.Tokens;
-using WebApi.Middlewares;
 using Newtonsoft.Json;
+using Serilog;
 using System.Text;
-using Infrastructure;
-using Application;
+using WebApi.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog((hostBuilderContext, configuration) =>
+{
+    configuration
+    .ReadFrom.Configuration(hostBuilderContext.Configuration);
+});
 
 // Add services to the container.
 builder.Services.AddInfrastructureServices(builder.Configuration);
@@ -57,6 +64,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseSerilogRequestLogging();
 app.UseCookiePolicy(new CookiePolicyOptions
 {
     MinimumSameSitePolicy = SameSiteMode.None,

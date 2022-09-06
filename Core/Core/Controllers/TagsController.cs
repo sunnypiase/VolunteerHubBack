@@ -1,11 +1,10 @@
 ﻿using Application.Commands.Tags;
 using Application.Queries.Tags;
-using Application.Tags.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Core.Controllers
+namespace WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

@@ -22,6 +22,40 @@ namespace Core.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
+            modelBuilder.Entity("Domain.Models.Image", b =>
+                {
+                    b.Property<int>("ImageId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ImageId"), 1L, 1);
+
+                    b.Property<string>("Format")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ImageId");
+
+                    b.ToTable("Images");
+
+                    b.HasData(
+                        new
+                        {
+                            ImageId = 1,
+                            Format = "jpg"
+                        },
+                        new
+                        {
+                            ImageId = 2,
+                            Format = "jpg"
+                        },
+                        new
+                        {
+                            ImageId = 3,
+                            Format = "jpg"
+                        });
+                });
+
             modelBuilder.Entity("Domain.Models.Post", b =>
                 {
                     b.Property<int>("PostId")
@@ -34,9 +68,8 @@ namespace Core.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<byte[]>("Image")
-                        .IsRequired()
-                        .HasColumnType("varbinary(max)");
+                    b.Property<int>("PostImageId")
+                        .HasColumnType("int");
 
                     b.Property<int>("PostType")
                         .HasColumnType("int");
@@ -50,6 +83,8 @@ namespace Core.Migrations
 
                     b.HasKey("PostId");
 
+                    b.HasIndex("PostImageId");
+
                     b.HasIndex("UserId");
 
                     b.ToTable("Posts");
@@ -57,17 +92,26 @@ namespace Core.Migrations
 
             modelBuilder.Entity("Domain.Models.PostConnection", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("PostConnectionId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PostConnectionId"), 1L, 1);
 
                     b.Property<string>("Message")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("NeedfulPostPostId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("ReceiverHasSeen")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("SenderHasSeen")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("SenderId")
                         .HasColumnType("int");
 
                     b.Property<string>("Title")
@@ -77,7 +121,7 @@ namespace Core.Migrations
                     b.Property<int>("VolunteerPostPostId")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.HasKey("PostConnectionId");
 
                     b.HasIndex("NeedfulPostPostId");
 
@@ -100,6 +144,9 @@ namespace Core.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.HasKey("TagId");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("Tags");
 
@@ -130,7 +177,7 @@ namespace Core.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -144,6 +191,9 @@ namespace Core.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("ProfileImageId")
+                        .HasColumnType("int");
+
                     b.Property<int>("Role")
                         .HasColumnType("int");
 
@@ -152,6 +202,11 @@ namespace Core.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("UserId");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("ProfileImageId");
 
                     b.ToTable("Users");
 
@@ -164,6 +219,7 @@ namespace Core.Migrations
                             Name = "Admin",
                             Password = new byte[] { 218, 49, 142, 22, 217, 252, 247, 124, 109, 0, 230, 127, 13, 159, 153, 241, 198, 18, 231, 211, 121, 153, 219, 80, 72, 249, 255, 91, 137, 192, 210, 60, 237, 223, 205, 159, 252, 193, 17, 250, 226, 239, 169, 34, 40, 168, 23, 154, 1, 18, 145, 73, 83, 35, 91, 153, 4, 16, 72, 77, 43, 55, 31, 66 },
                             PhoneNumber = "88005553535",
+                            ProfileImageId = 1,
                             Role = 2,
                             Surname = "Test"
                         },
@@ -175,6 +231,7 @@ namespace Core.Migrations
                             Name = "Volunteer",
                             Password = new byte[] { 99, 75, 46, 160, 118, 173, 166, 203, 149, 66, 168, 76, 228, 217, 62, 28, 122, 239, 119, 97, 193, 144, 144, 174, 126, 40, 85, 241, 126, 172, 52, 124, 193, 254, 164, 70, 89, 111, 57, 116, 123, 166, 87, 127, 182, 160, 34, 229, 49, 74, 86, 30, 159, 87, 242, 34, 173, 108, 90, 106, 103, 22, 75, 104 },
                             PhoneNumber = "88005553535",
+                            ProfileImageId = 2,
                             Role = 0,
                             Surname = "Test"
                         },
@@ -186,6 +243,7 @@ namespace Core.Migrations
                             Name = "Needful",
                             Password = new byte[] { 27, 212, 237, 60, 65, 101, 16, 189, 249, 137, 227, 146, 38, 28, 79, 23, 79, 224, 126, 171, 1, 61, 77, 13, 88, 35, 116, 198, 177, 117, 213, 74, 181, 201, 67, 124, 241, 109, 76, 40, 253, 125, 122, 90, 238, 171, 83, 163, 68, 178, 141, 242, 133, 196, 176, 7, 207, 13, 137, 162, 94, 122, 182, 234 },
                             PhoneNumber = "88005553535",
+                            ProfileImageId = 3,
                             Role = 1,
                             Surname = "Test"
                         });
@@ -208,11 +266,19 @@ namespace Core.Migrations
 
             modelBuilder.Entity("Domain.Models.Post", b =>
                 {
+                    b.HasOne("Domain.Models.Image", "PostImage")
+                        .WithMany()
+                        .HasForeignKey("PostImageId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.HasOne("Domain.Models.User", "User")
                         .WithMany("Posts")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("PostImage");
 
                     b.Navigation("User");
                 });
@@ -234,6 +300,17 @@ namespace Core.Migrations
                     b.Navigation("NeedfulPost");
 
                     b.Navigation("VolunteerPost");
+                });
+
+            modelBuilder.Entity("Domain.Models.User", b =>
+                {
+                    b.HasOne("Domain.Models.Image", "ProfileImage")
+                        .WithMany()
+                        .HasForeignKey("ProfileImageId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("ProfileImage");
                 });
 
             modelBuilder.Entity("PostTag", b =>

@@ -1,7 +1,8 @@
 ﻿using Application.Commands.Posts;
-using Application.Posts.Queries;
+using Application.Commands.Users;
 using Application.Queries.Posts;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Controllers
@@ -24,15 +25,46 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(int id)
+        public async Task<IActionResult> GetById(int id)
         {
             return Ok(await _mediator.Send(new GetPostByIdQuery(id)));
         }
 
+        [HttpGet("by-tags")]
+        public async Task<IActionResult> GetByTags([FromQuery(Name = "ids")] string tagIds)
+        {
+            return Ok(await _mediator.Send(
+                new GetPostsByTagsQuery(tagIds
+                .Split(",", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .Where(tag => int.TryParse(tag, out _))
+                .Select(tag => int.Parse(tag)))));
+        }
+
+        [HttpGet("currentUser")]
+        [Authorize(Roles = "Volunteer,Needful")]
+        public async Task<IActionResult> GetByToken()
+        {
+            return Ok(await _mediator.Send(new GetPostsByTokenQuery(Request.Cookies["token"])));
+        }
+
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] CreatePostCommand post)
+        [Authorize(Roles = "Volunteer,Needful")]
+        public async Task<IActionResult> Post([FromForm] CreatePostCommand post)
         {
             return Ok(await _mediator.Send(post));
+        }
+        [HttpPut("UpdatePostById")]
+        [Authorize]
+        public async Task<IActionResult> UpdateInfo([FromForm] UpdatePostCommand postToUpdate)
+        {
+            return Ok(await _mediator.Send(postToUpdate));
+        }
+
+        [HttpDelete]
+        [Authorize]
+        public async Task<IActionResult> DeletePost(int id)
+        {
+            return Ok(await _mediator.Send(new DeletePostCommand(id, Request.Cookies["token"])));
         }
     }
 }

@@ -1,66 +1,67 @@
-﻿using Application.Services;
-using Application.UnitOfWorks;
+﻿using Application.Commands.Images;
+using Application.Repositories;
 using Domain.Enums;
 using Domain.Exceptions;
 using Domain.Models;
 using MediatR;
-using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Http;
 
 namespace Application.Commands.Posts
 {
     public record CreatePostCommand : IRequest<Post>
     {
         // can there be a post without an image or tags?
+        public int UserId { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
-        public int UserId { get; set; }
         public ICollection<int> TagIds { get; set; }
+        public IFormFile ImageFile { get; set; }
 
-        [JsonConverter(typeof(ByteArrayConverter))]
-        public byte[] Image { get; set; }
     }
 
     public class CreatePostHandler : IRequestHandler<CreatePostCommand, Post>
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IMediator _mediator;
 
-        public CreatePostHandler(IUnitOfWork unitOfWork)
+        public CreatePostHandler(IUnitOfWork unitOfWork, IMediator mediator)
         {
             _unitOfWork = unitOfWork;
+            _mediator = mediator;
         }
         public async Task<Post> Handle(CreatePostCommand request, CancellationToken cancellationToken)
         {
-            var postOwner = await _unitOfWork.Users.GetById(request.UserId);
+            User? postOwner = await _unitOfWork.Users.GetByIdAsync(request.UserId);
 
             if (postOwner == null)
             {
                 throw new UserNotFoundException(request.UserId);
             }
 
-            var postType = postOwner.Role == UserRole.Needful ? PostType.REQUEST : PostType.PROPOSITION;
+            PostType postType = postOwner.Role == UserRole.Needful ? PostType.Request : PostType.Proposition;
 
-            var post = new Post()
+            Post? post = new Post()
             {
                 Title = request.Title,
                 Description = request.Description,
                 UserId = request.UserId,
                 User = postOwner,
                 Tags = await GetTagsByIdsAsync(request.TagIds),
-                Image = request.Image,
+                PostImage = await _mediator.Send(new CreateImageCommand(request.ImageFile), cancellationToken),
                 PostType = postType
             };
 
-            await _unitOfWork.Posts.Insert(post);
-            await _unitOfWork.SaveChanges();
+            await _unitOfWork.Posts.InsertAsync(post);
+            await _unitOfWork.SaveChangesAsync();
             return post;
         }
 
         private async Task<ICollection<Tag>> GetTagsByIdsAsync(ICollection<int> tagIds)
         {
-            var tags = new List<Tag>();
-            foreach (var tagId in tagIds)
+            List<Tag>? tags = new List<Tag>();
+            foreach (int tagId in tagIds)
             {
-                var tag = await _unitOfWork.Tags.GetById(tagId);
+                Tag? tag = await _unitOfWork.Tags.GetByIdAsync(tagId);
                 if (tag != null)
                 {
                     tags.Add(tag);

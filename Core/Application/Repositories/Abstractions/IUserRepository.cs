@@ -1,8 +1,8 @@
 ﻿using Domain.Models;
 
-namespace Domain.Abstractions
+namespace Application.Repositories.Abstractions
 {
-    public interface IUserRepository : IGenericRepository<User>
+    public interface IUserRepository : IGenericRepository<User, int>
     {
     }
 }

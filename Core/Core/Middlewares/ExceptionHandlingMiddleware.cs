@@ -16,18 +16,18 @@ namespace WebApi.Middlewares
             _next = next;
             _logger = loggerFactory.CreateLogger(nameof(ExceptionHandlingMiddleware));
         }
-        public async Task Invoke(HttpContext context)
+        public async Task InvokeAsync(HttpContext context)
         {
             try
             {
-                _logger.LogInformation($"Sending request to {context.Request.Path}");
-                await _next(context);
+                await _next.Invoke(context);
             }
             catch (Exception ex)
             {
                 context.Response.StatusCode = GetStatusCode(ex.GetType());
                 context.Response.ContentType = "text/plain; charset=utf-8";
                 await context.Response.WriteAsync(ex.Message);
+                _logger.LogError(ex, ex.Message);
             }
         }
         private int GetStatusCode(Type exceptionType)

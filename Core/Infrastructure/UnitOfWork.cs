@@ -1,8 +1,7 @@
-﻿using Application.Repositories.Abstractions;
-using Application.UnitOfWorks;
-using Domain.Abstractions;
+﻿using Application.Repositories;
+using Application.Repositories.Abstractions;
 
-namespace Infrastructure.UnitOfWorks
+namespace Infrastructure
 {
     public class UnitOfWork : IUnitOfWork
     {
@@ -10,49 +9,34 @@ namespace Infrastructure.UnitOfWorks
         private readonly IUserRepository _userRepository;
         private readonly IPostRepository _postRepository;
         private readonly ITagRepository _tagRepository;
-        public readonly IPostConnectionRepository _postConnectionRepository;
+        private readonly IPostConnectionRepository _postConnectionRepository;
+        private readonly IImageRepository _imageRepository;
 
         public UnitOfWork(
             ApplicationContext applicationContext,
             IUserRepository userRepository,
             IPostRepository postRepository,
             ITagRepository tagRepository,
-            IPostConnectionRepository postConnectionRepository)
+            IPostConnectionRepository postConnectionRepository,
+            IImageRepository imageRepository)
         {
             _applicationContext = applicationContext;
             _userRepository = userRepository;
             _postRepository = postRepository;
             _tagRepository = tagRepository;
             _postConnectionRepository = postConnectionRepository;
+            _imageRepository = imageRepository;
         }
 
         public IUserRepository Users => _userRepository;
         public IPostRepository Posts => _postRepository;
         public ITagRepository Tags => _tagRepository;
         public IPostConnectionRepository PostConnections => _postConnectionRepository;
+        public IImageRepository Images => _imageRepository;
 
-        public async Task SaveChanges()
+        public async Task SaveChangesAsync()
         {
             await _applicationContext.SaveChangesAsync();
-        }
-
-        private bool disposed = false;
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposed)
-            {
-                if (disposing)
-                {
-                    _applicationContext.Dispose();
-                }
-            }
-            disposed = true;
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
         }
     }
 }
