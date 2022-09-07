@@ -26,24 +26,15 @@ namespace Application.Commands.Users
         [Required]
         [EmailAddress]
         public string Email { get; init; }
-        [Required(ErrorMessage = "Password is reqired")]
-        [StringLength(20, ErrorMessage = "Password must be between 8 and 20 characters", MinimumLength = 8)]
-        public string Password { get; init; }
-        [Required(ErrorMessage = "Password is reqired")]
-        [StringLength(20, ErrorMessage = "Password must be between 8 and 20 characters", MinimumLength = 8)]
-        [Compare("Password", ErrorMessage = "Passwords do not match")]
-        public string RepeatPassword { get; init; }
         [Required]
         [Phone]
         public string PhoneNumber { get; init; }
         public string Address { get; init; }
-        public UpdateUserInfoCommand(string name, string surname, string email, string password, string repeatPassword, string phoneNumber, string address)
+        public UpdateUserInfoCommand(string name, string surname, string email, string phoneNumber, string address)
         {
             Name = name;
             Surname = surname;
             Email = email;
-            Password = password;
-            RepeatPassword = repeatPassword;
             PhoneNumber = phoneNumber;
             Address = address;
         }
@@ -61,8 +52,7 @@ namespace Application.Commands.Users
         }
         public async Task<Unit> Handle(UpdateUserInfoCommand request, CancellationToken cancellationToken)
         {
-            byte[]? passwordHash = _hashingService.GetHash(request.Password);
-            User? userToUpdate = (await _unitOfWork.Users.GetAsync(user => user.Email == request.Email && user.Password == passwordHash)).FirstOrDefault();
+            User? userToUpdate = (await _unitOfWork.Users.GetAsync(user => user.Email == request.Email)).FirstOrDefault();
 
             if (userToUpdate == null)
             {
