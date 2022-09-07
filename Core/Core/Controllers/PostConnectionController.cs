@@ -53,7 +53,7 @@ namespace WebApi.Controllers
         {
             return Ok(await _mediator.Send(new UpdatePostConnectionRevisionCommand(
                 Request.Cookies["token"],
-                postConnection.PostConnectionIds)));
+                postConnection.PostConnectionId)));
         }
 
         [HttpDelete]

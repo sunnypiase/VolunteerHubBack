@@ -1,5 +1,6 @@
 ﻿using Application.Repositories;
 using Application.Services;
+using Domain.Exceptions;
 using Domain.Models;
 using MediatR;
 
@@ -8,11 +9,11 @@ namespace Application.Commands.PostConnections
     public record UpdatePostConnectionRevisionCommand : IRequest
     {
         public string? Token { get; init; }
-        public int[] PostConnectionIds { get; init; }
-        public UpdatePostConnectionRevisionCommand(string? token, int[] postConnectionIds)
+        public int PostConnectionId { get; init; }
+        public UpdatePostConnectionRevisionCommand(string? token, int postConnectionId)
         {
             Token = token;
-            PostConnectionIds = postConnectionIds;
+            PostConnectionId = postConnectionId;
         }
     }
     public class UpdatePostConnectionRevisionHandler : IRequestHandler<UpdatePostConnectionRevisionCommand>
@@ -26,24 +27,25 @@ namespace Application.Commands.PostConnections
         {
             var userFromToken = new GetUserFromTokenService(request.Token);
 
-            foreach (var postConnectionId in request.PostConnectionIds)
+            var postConnectionToUpdate = await _unitOfWork.PostConnections.GetByIdAsync(request.PostConnectionId);
+            if (postConnectionToUpdate == null ||
+                (postConnectionToUpdate.VolunteerPost.UserId != userFromToken.UserId &&
+                postConnectionToUpdate.NeedfulPost.UserId != userFromToken.UserId))
             {
-                var postConnectionToUpdate = await _unitOfWork.PostConnections.GetByIdAsync(postConnectionId);
-                if (postConnectionToUpdate != null)
-                {
-                    await _unitOfWork.PostConnections.UpdateAsync(new PostConnection()
-                    {
-                        PostConnectionId = postConnectionToUpdate.PostConnectionId,
-                        Title = postConnectionToUpdate.Title,
-                        Message = postConnectionToUpdate.Message,
-                        VolunteerPost = postConnectionToUpdate.VolunteerPost,
-                        NeedfulPost = postConnectionToUpdate.NeedfulPost,
-                        SenderId = postConnectionToUpdate.SenderId,
-                        SenderHasSeen = userFromToken.UserId == postConnectionToUpdate.SenderId ? true : postConnectionToUpdate.SenderHasSeen,
-                        ReceiverHasSeen = userFromToken.UserId == postConnectionToUpdate.SenderId ? postConnectionToUpdate.ReceiverHasSeen : true
-                    });
-                }
+                throw new PostConnectionNotFoundException(request.PostConnectionId.ToString());
             }
+
+            await _unitOfWork.PostConnections.UpdateAsync(new PostConnection()
+            {
+                PostConnectionId = postConnectionToUpdate.PostConnectionId,
+                Title = postConnectionToUpdate.Title,
+                Message = postConnectionToUpdate.Message,
+                VolunteerPost = postConnectionToUpdate.VolunteerPost,
+                NeedfulPost = postConnectionToUpdate.NeedfulPost,
+                SenderId = postConnectionToUpdate.SenderId,
+                SenderHasSeen = userFromToken.UserId == postConnectionToUpdate.SenderId ? true : postConnectionToUpdate.SenderHasSeen,
+                ReceiverHasSeen = userFromToken.UserId == postConnectionToUpdate.SenderId ? postConnectionToUpdate.ReceiverHasSeen : true
+            });
 
             await _unitOfWork.SaveChangesAsync();
             return default;

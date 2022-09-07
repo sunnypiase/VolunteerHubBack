@@ -2,10 +2,10 @@
 {
     public record UpdatePostConnectionRevisionRequest
     {
-        public int[] PostConnectionIds { get; init; }
-        public UpdatePostConnectionRevisionRequest(int[] postConnectionIds)
+        public int PostConnectionId { get; init; }
+        public UpdatePostConnectionRevisionRequest(int postConnectionId)
         {
-            PostConnectionIds = postConnectionIds;
+            PostConnectionId = postConnectionId;
         }
     }
 }
