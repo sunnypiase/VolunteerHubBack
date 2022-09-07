@@ -58,7 +58,7 @@ namespace Application.Commands.Posts
             postToUpdate.Description = request.Description;
             postToUpdate.Tags = await GetTagsByIdsAsync(request.TagIds);
             await _unitOfWork.Images.UpdateAsync(new Image() { ImageId = postToUpdate.PostImageId, Format = request.PostImageFile.ContentType.Split('/')[1] });
-            postToUpdate.PostImage = await _unitOfWork.Images.GetByIdAsync(postToUpdate.PostImageId);
+            postToUpdate.PostImage = await _unitOfWork.Images.GetByIdAsync(postToUpdate.PostImageId)!;
 
             
             await _blobRepository.UploadImage(request.PostImageFile, postToUpdate.PostImage.ToString());
