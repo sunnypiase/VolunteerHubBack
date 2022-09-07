@@ -29,7 +29,8 @@ namespace Application.Commands.PostConnections
             foreach (var postConnectionId in request.PostConnectionIds)
             {
                 var postConnectionToUpdate = await _unitOfWork.PostConnections.GetByIdAsync(postConnectionId);
-                if (postConnectionToUpdate != null)
+                if (postConnectionToUpdate != null && (postConnectionToUpdate.VolunteerPost.UserId == userFromToken.UserId ||
+                postConnectionToUpdate.NeedfulPost.UserId == userFromToken.UserId))
                 {
                     await _unitOfWork.PostConnections.UpdateAsync(new PostConnection()
                     {
