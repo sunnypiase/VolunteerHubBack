@@ -41,38 +41,6 @@ namespace WebApi.Tests
             Assert.Equal(200, (int)response.StatusCode);
 
         }
-        [Fact]
-        public async Task ShouldLoginTheAppAsync()
-        {
-            var application = new WebApplicationFactory<Program>()
-                .WithWebHostBuilder(builder =>
-                {
-                    builder.ConfigureServices(services =>
-                    {
-                        MockDatabase(services);
-                        MockBlob(services);
-                        
-                    });
-                });
-
-
-            // Setup data via http calls
-
-            // Get data with aggregation
-
-            // Verify
-
-            var client = application.CreateClient();
-
-            //var response = await client.PostAsync();
-
-            var response2 = await client.GetAsync("/api/tags");
-            response2.
-
-            Assert.Equal(200, (int)response2.StatusCode);
-
-
-        }
 
         private void MockDatabase(IServiceCollection services)
         {

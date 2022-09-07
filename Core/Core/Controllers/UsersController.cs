@@ -80,7 +80,7 @@ namespace WebApi.Controllers
             return Ok(await _mediator.Send(new GetUserByEmailQuery(email)));
         }
         [AllowAnonymous]
-        [HttpGet("ifUserAuthorize")]
+        [HttpGet("if-authorize")]
         public IActionResult GetIfUserExist()
         {
             return Ok(HttpContext.Request.Cookies["token"] != null);
