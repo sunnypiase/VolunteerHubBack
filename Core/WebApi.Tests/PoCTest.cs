@@ -1,20 +1,14 @@
 using Application.Repositories;
 using Application.Repositories.Abstractions;
-using Domain.Models;
 using Infrastructure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System;
 using System.Linq;
-using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
+
 
 namespace WebApi.Tests
 {
@@ -77,6 +71,7 @@ namespace WebApi.Tests
 
             Assert.Equal(200, (int)response2.StatusCode);
 
+
         }
 
         private void MockDatabase(IServiceCollection services)
@@ -118,24 +113,24 @@ namespace WebApi.Tests
             }
         }
 
-        private string GenerateJwtTokenForVolunteer()
-        {
-            SymmetricSecurityKey? securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Key"]));
-            SigningCredentials? credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+        //private string GenerateJwtTokenForVolunteer()
+        //{
+        //    SymmetricSecurityKey? securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Key"]));
+        //    SigningCredentials? credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-            List<Claim>? claims = new List<Claim>
-            {
-                new Claim("Id", "100"),
-                new Claim(ClaimTypes.Email, "test@gmail.com"),
-                new Claim(ClaimTypes.Role, "Volunteer")
-            };
+        //    List<Claim>? claims = new List<Claim>
+        //    {
+        //        new Claim("Id", "100"),
+        //        new Claim(ClaimTypes.Email, "test@gmail.com"),
+        //        new Claim(ClaimTypes.Role, "Volunteer")
+        //    };
 
-            JwtSecurityToken? token = new JwtSecurityToken(
-                claims: claims,
-                expires: DateTime.Now.AddDays(1),
-                signingCredentials: credentials);
+        //    JwtSecurityToken? token = new JwtSecurityToken(
+        //        claims: claims,
+        //        expires: DateTime.Now.AddDays(1),
+        //        signingCredentials: credentials);
 
-            return new JwtSecurityTokenHandler().WriteToken(token);
-        }
+        //    return new JwtSecurityTokenHandler().WriteToken(token);
+        //}
     }
 }
