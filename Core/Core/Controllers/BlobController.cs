@@ -8,7 +8,7 @@ namespace WebApi.Controllers
     [ApiController]
     public class BlobController : ControllerBase
     {
-        private readonly IBlobRepository _blobRepository;//TODO: MediatR
+        private readonly IBlobRepository _blobRepository;
 
         public BlobController(IBlobRepository blobRepository)
         {

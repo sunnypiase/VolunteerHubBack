@@ -9,11 +9,11 @@ namespace WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PostController : ControllerBase
+    public class PostsController : ControllerBase
     {
         private readonly IMediator _mediator;
 
-        public PostController(IMediator mediator)
+        public PostsController(IMediator mediator)
         {
             _mediator = mediator;
         }
@@ -40,7 +40,7 @@ namespace WebApi.Controllers
                 .Select(tag => int.Parse(tag)))));
         }
 
-        [HttpGet("currentUser")]
+        [HttpGet("current-user")]
         [Authorize(Roles = "Volunteer,Needful")]
         public async Task<IActionResult> GetByToken()
         {
@@ -53,7 +53,7 @@ namespace WebApi.Controllers
         {
             return Ok(await _mediator.Send(post));
         }
-        [HttpPut("UpdatePostById")]
+        [HttpPut]
         [Authorize]
         public async Task<IActionResult> UpdateInfo([FromForm] UpdatePostCommand postToUpdate)
         {

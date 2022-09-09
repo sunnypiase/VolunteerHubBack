@@ -10,7 +10,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Application.Commands.Posts
 {
-    public record UpdatePostCommand : IRequest
+    public class UpdatePostCommand : IRequest
     {
         [Required]
         public int PostId { get; set; }
@@ -22,16 +22,6 @@ namespace Application.Commands.Posts
         public IFormFile PostImageFile { get; set; }
         [Required]
         public ICollection<int> TagIds { get; set; }
-
-        //public UpdatePostCommand(int postId, string title, string description, IFormFile postImageFile,
-        //    ICollection<Tag> tags)
-        //{
-        //    PostId = postId;
-        //    Title = title;
-        //    Description = description;
-        //    PostImageFile = postImageFile;
-        //    Tags = tags;
-        //}
     }
      
     public class UpdatePostHandler : IRequestHandler<UpdatePostCommand>
@@ -58,7 +48,7 @@ namespace Application.Commands.Posts
             postToUpdate.Description = request.Description;
             postToUpdate.Tags = await GetTagsByIdsAsync(request.TagIds);
             await _unitOfWork.Images.UpdateAsync(new Image() { ImageId = postToUpdate.PostImageId, Format = request.PostImageFile.ContentType.Split('/')[1] });
-            postToUpdate.PostImage = await _unitOfWork.Images.GetByIdAsync(postToUpdate.PostImageId);
+            postToUpdate.PostImage = await _unitOfWork.Images.GetByIdAsync(postToUpdate.PostImageId)!;
 
             
             await _blobRepository.UploadImage(request.PostImageFile, postToUpdate.PostImage.ToString());
