@@ -9,23 +9,23 @@ namespace WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PostConnectionController : ControllerBase
+    public class PostConnectionsController : ControllerBase
     {
         private readonly IMediator _mediator;
 
-        public PostConnectionController(IMediator mediator)
+        public PostConnectionsController(IMediator mediator)
         {
             _mediator = mediator;
         }
 
-        [HttpGet("all")]
+        [HttpGet]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetPostConnections()
         {
             return Ok(await _mediator.Send(new GetPostConnectionsQuery()));
         }
 
-        [HttpGet("currentUser")]
+        [HttpGet("current-user")]
         [Authorize(Roles = "Volunteer,Needful")]
         public async Task<IActionResult> GetPostConnectionsOfAuthorizedUser()
         {
@@ -54,6 +54,13 @@ namespace WebApi.Controllers
             return Ok(await _mediator.Send(new UpdatePostConnectionRevisionCommand(
                 Request.Cookies["token"],
                 postConnection.PostConnectionIds)));
+        }
+
+        [HttpDelete]
+        [Authorize]
+        public async Task<IActionResult> DeletePostConnection(int id)
+        {
+            return Ok(await _mediator.Send(new DeletePostConnectionCommand(id, Request.Cookies["token"])));
         }
     }
 }

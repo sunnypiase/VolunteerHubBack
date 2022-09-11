@@ -40,7 +40,7 @@ builder.Services.AddCors(options =>
     options.AddDefaultPolicy(
         builder =>
         {
-            builder.WithOrigins("http://localhost:3000");
+            builder.WithOrigins("http://localhost:3000", "https://volunteershub.azurewebsites.net");
             builder.AllowCredentials();
         });
 });
@@ -63,7 +63,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseSerilogRequestLogging();
+app.UseSerilogRequestLogging(); 
 app.UseCookiePolicy(new CookiePolicyOptions
 {
     MinimumSameSitePolicy = SameSiteMode.None,
@@ -87,3 +87,5 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+public partial class Program { }
