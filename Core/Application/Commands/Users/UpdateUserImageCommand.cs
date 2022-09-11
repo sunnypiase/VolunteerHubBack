@@ -1,18 +1,10 @@
-﻿using Application.Commands.Images;
-using Application.Repositories;
+﻿using Application.Repositories;
 using Application.Repositories.Abstractions;
-using Application.Services;
-using Domain.Enums;
 using Domain.Exceptions;
 using Domain.Models;
 using MediatR;
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Commands.Users
 {
@@ -43,12 +35,15 @@ namespace Application.Commands.Users
             {
                 throw new UserNotFoundException(request.Email);
             }
-            userToUpdate.ProfileImage = new Image() { ImageId = userToUpdate.ProfileImageId, Format = request.ProfileImageFile.ContentType.Split('/')[1] };
 
+            await _unitOfWork.Images.UpdateAsync(new Image() { ImageId = userToUpdate.ProfileImageId, Format = request.ProfileImageFile.ContentType.Split('/')[1] });
+            userToUpdate.ProfileImage = await _unitOfWork.Images.GetByIdAsync(userToUpdate.ProfileImageId);
 
             await _blobRepository.UploadImage(request.ProfileImageFile, userToUpdate.ProfileImage.ToString());
+            await _unitOfWork.Users.UpdateAsync(userToUpdate);
             await _unitOfWork.Images.UpdateAsync(userToUpdate.ProfileImage);
             await _unitOfWork.SaveChangesAsync();
+
             return default;
         }
     }

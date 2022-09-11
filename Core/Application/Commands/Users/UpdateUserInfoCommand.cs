@@ -1,17 +1,8 @@
-﻿using Application.Commands.Images;
-using Application.Repositories;
-using Application.Services;
-using Domain.Attributes;
-using Domain.Enums;
+﻿using Application.Repositories;
 using Domain.Exceptions;
 using Domain.Models;
 using MediatR;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Commands.Users
 {
@@ -44,11 +35,9 @@ namespace Application.Commands.Users
     public class UpdateUserInfoHandler : IRequestHandler<UpdateUserInfoCommand>
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IHashingService _hashingService;
-        public UpdateUserInfoHandler(IUnitOfWork unitOfWork, IHashingService hashingService)
+        public UpdateUserInfoHandler(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-            _hashingService = hashingService;
         }
         public async Task<Unit> Handle(UpdateUserInfoCommand request, CancellationToken cancellationToken)
         {
