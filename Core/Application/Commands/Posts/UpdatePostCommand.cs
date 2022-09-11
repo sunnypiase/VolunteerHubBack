@@ -1,5 +1,4 @@
-﻿using Application.Commands.Users;
-using Application.Repositories;
+﻿using Application.Repositories;
 using Application.Repositories.Abstractions;
 using Domain.Exceptions;
 using Domain.Models;
@@ -41,8 +40,6 @@ namespace Application.Commands.Posts
             {
                 throw new PostNotFoundException(request.PostId.ToString());
             }
-
-            Console.WriteLine(postToUpdate);
 
             postToUpdate.Title = request.Title;
             postToUpdate.Description = request.Description;
