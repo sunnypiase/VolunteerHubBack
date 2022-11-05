@@ -1,5 +1,4 @@
-﻿using Application.Commands.Images;
-using Application.Repositories;
+﻿using Application.Repositories;
 using Application.Services;
 using Domain.Attributes;
 using Domain.Enums;
@@ -29,7 +28,6 @@ namespace Application.Commands.Users
         [StringLength(20, ErrorMessage = "Password must be between 8 and 20 characters", MinimumLength = 8)]
         [Compare("Password", ErrorMessage = "Passwords do not match")]
         public string RepeatPassword { get; set; }
-        public IFormFile ProfileImageFile { get; set; }
         [Required]
         [Phone]
         public string PhoneNumber { get; set; }
@@ -65,7 +63,6 @@ namespace Application.Commands.Users
                 Surname = request.Surname,
                 Email = request.Email,
                 Password = _hashingService.GetHash(request.Password),
-                ProfileImage = await _mediator.Send(new CreateImageCommand(request.ProfileImageFile), cancellationToken),
                 PhoneNumber = request.PhoneNumber,
                 Address = request.Address,
                 Role = Enum.Parse<UserRole>(request.Role)

@@ -26,11 +26,9 @@ namespace Application.Commands.Posts
     public class UpdatePostHandler : IRequestHandler<UpdatePostCommand>
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IBlobRepository _blobRepository;
-        public UpdatePostHandler(IUnitOfWork unitOfWork, IBlobRepository blobRepository)
+        public UpdatePostHandler(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-            _blobRepository = blobRepository;
         }
         public async Task<Unit> Handle(UpdatePostCommand request, CancellationToken cancellationToken)
         {
@@ -44,13 +42,9 @@ namespace Application.Commands.Posts
             postToUpdate.Title = request.Title;
             postToUpdate.Description = request.Description;
             postToUpdate.Tags = await GetTagsByIdsAsync(request.TagIds);
-            await _unitOfWork.Images.UpdateAsync(new Image() { ImageId = postToUpdate.PostImageId, Format = request.PostImageFile.ContentType.Split('/')[1] });
-            postToUpdate.PostImage = await _unitOfWork.Images.GetByIdAsync(postToUpdate.PostImageId)!;
 
             
-            await _blobRepository.UploadImage(request.PostImageFile, postToUpdate.PostImage.ToString());
             await _unitOfWork.Posts.UpdateAsync(postToUpdate);
-            await _unitOfWork.Images.UpdateAsync(postToUpdate.PostImage);
             await _unitOfWork.SaveChangesAsync();
             return default;
         }

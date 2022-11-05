@@ -31,7 +31,6 @@ namespace Infrastructure.Repositories
         public override async Task<User?> GetByIdAsync(int id)
         {
             return await _entity
-                .Include(user => user.ProfileImage)
                 .FirstOrDefaultAsync(user => user.UserId == id) ?? throw new UserNotFoundException(id);
         }
     }

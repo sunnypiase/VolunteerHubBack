@@ -20,14 +20,12 @@ namespace Infrastructure
             services.AddSingleton(sp =>
                 new BlobServiceClient(configuration.GetConnectionString("AzureBlobStorageConnection")));
 
-            services.AddSingleton<IBlobRepository, BlobRepository>();
 
             services.AddTransient<IHashingService, HashingService>();
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<ITagRepository, TagRepository>();
             services.AddTransient<IPostRepository, PostRepository>();
             services.AddTransient<IPostConnectionRepository, PostConnectionRepository>();
-            services.AddTransient<IImageRepository, ImageRepository>();
             services.AddTransient<IUnitOfWork, UnitOfWork>();
 
         }

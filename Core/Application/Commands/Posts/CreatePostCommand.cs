@@ -1,5 +1,4 @@
-﻿using Application.Commands.Images;
-using Application.Repositories;
+﻿using Application.Repositories;
 using Domain.Enums;
 using Domain.Exceptions;
 using Domain.Models;
@@ -15,7 +14,6 @@ namespace Application.Commands.Posts
         public string Title { get; set; }
         public string Description { get; set; }
         public ICollection<int> TagIds { get; set; }
-        public IFormFile ImageFile { get; set; }
 
     }
 
@@ -47,7 +45,6 @@ namespace Application.Commands.Posts
                 UserId = request.UserId,
                 User = postOwner,
                 Tags = await GetTagsByIdsAsync(request.TagIds),
-                PostImage = await _mediator.Send(new CreateImageCommand(request.ImageFile), cancellationToken),
                 PostType = postType
             };
 

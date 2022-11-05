@@ -18,7 +18,6 @@ namespace Infrastructure.Repositories
             {
                 postToUpdate.Title = entityToUpdate.Title;
                 postToUpdate.Description = entityToUpdate.Description;
-                postToUpdate.PostImage = entityToUpdate.PostImage;
                 postToUpdate.UserId = entityToUpdate.UserId;
                 postToUpdate.User = entityToUpdate.User;
                 postToUpdate.Tags = entityToUpdate.Tags;
@@ -30,7 +29,6 @@ namespace Infrastructure.Repositories
         {
             return await _entity.Include("User")
                                 .Include(post => post.Tags)
-                                .Include(post => post.PostImage)
                                 .FirstOrDefaultAsync(post => post.PostId == id);
         }
     }
